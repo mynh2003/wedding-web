@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 
-const weddingDate = new Date("2026-11-22T16:30:00+07:00").getTime();
+const weddingDate = new Date("2026-11-22T09:30:00+07:00").getTime();
 
 function remaining() {
   const distance = Math.max(0, weddingDate - Date.now());
