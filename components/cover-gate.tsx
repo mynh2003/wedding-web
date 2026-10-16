@@ -29,7 +29,7 @@ export function CoverGate() {
             <p className="text-xs uppercase tracking-[.4em] text-gold">Một lời mời trân trọng</p>
             <div className="mx-auto my-8 grid h-28 w-28 place-items-center rounded-full border border-gold/60 font-display text-5xl italic text-gold">M<span className="text-2xl">&amp;</span>H</div>
             <p className="font-display text-3xl italic">Trân trọng kính mời bạn</p>
-            <p className="mt-3 text-sm leading-7 text-cream/65">đến chung vui trong ngày hạnh phúc của Minh và Hương</p>
+            <p className="mt-3 text-sm leading-7 text-cream/65">đến chung vui trong ngày hạnh phúc của Bình Minh và Ninh Thị Huệ</p>
             <button onClick={openInvitation} className="group mt-10 inline-flex items-center gap-3 rounded-full border border-gold/70 px-7 py-3.5 text-sm font-semibold text-cream transition hover:bg-gold hover:text-ink focus:outline-none focus:ring-2 focus:ring-gold focus:ring-offset-2 focus:ring-offset-wine">
               Mở thiệp <span className="transition-transform group-hover:translate-x-1">→</span>
             </button>
