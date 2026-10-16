@@ -3,11 +3,11 @@ import "server-only";
 import { redirect } from "next/navigation";
 import { createClient } from "@/lib/supabase/server";
 
-export async function requireAdmin() {
+export async function getAdmin() {
   const supabase = await createClient();
   const { data: { user } } = await supabase.auth.getUser();
 
-  if (!user || !user.email_confirmed_at) redirect("/admin/login");
+  if (!user || !user.email_confirmed_at) return null;
 
   const { data: admin } = await supabase
     .from("admin_users")
@@ -16,6 +16,12 @@ export async function requireAdmin() {
     .eq("is_active", true)
     .maybeSingle();
 
-  if (!admin) redirect("/admin/login");
-  return { user, admin };
+  if (!admin) return null;
+  return { user, admin, supabase };
+}
+
+export async function requireAdmin() {
+  const result = await getAdmin();
+  if (!result) redirect("/admin/login");
+  return result;
 }

@@ -8,7 +8,7 @@
     "start": "next start",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "test": "node --test tests/phase3-security.test.mjs"
+    "test": "node --test tests/phase3-security.test.mjs tests/phase4-security.test.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.7.0",

@@ -7,3 +7,7 @@
 5. Verify with a non-admin session that `guests`, `invitation_links` and `admin_users` are not readable, and that only published public rows are visible.
 
 The migration deliberately does not create public insert policies for `wishes`; that endpoint belongs to Phase 5 and must add server validation and rate limiting first.
+
+## Phase 4 token links
+
+Run `202610160002_phase4_token_resolution.sql` after the Phase 3 migration. The app generates 32-byte random tokens on the server, stores only their SHA-256 hash, and exposes the raw link only in the create/regenerate response. The public resolver returns only the guest display name and published wedding slug; it does not return token hashes or guest contact data.
