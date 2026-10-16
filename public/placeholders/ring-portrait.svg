@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 900 1200" role="img" aria-labelledby="title">
+  <title id="title">Placeholder ảnh cưới nét vẽ nhẫn</title>
+  <rect width="900" height="1200" fill="#f5eee4"/>
+  <path d="M130 950c90-180 210-258 320-258s230 78 320 258" fill="none" stroke="#722f37" stroke-opacity=".14" stroke-width="4"/>
+  <g fill="none" stroke="#722f37" stroke-width="13"><circle cx="395" cy="585" r="154"/><circle cx="555" cy="535" r="154"/></g>
+  <circle cx="555" cy="381" r="25" fill="#d4af37"/>
+  <path d="M240 275c92 50 144 106 155 168M660 275c-92 50-144 106-155 168" fill="none" stroke="#d4af37" stroke-linecap="round" stroke-width="8"/>
+</svg>

@@ -8,5 +8,16 @@ const variants: Variants = {
 };
 
 export function Reveal({ children, delay = 0, className = "" }: { children: React.ReactNode; delay?: number; className?: string }) {
-  return <motion.div className={className} variants={variants} initial="hidden" animate="visible" transition={{ delay }}>{children}</motion.div>;
+  return (
+    <motion.div
+      className={className}
+      variants={variants}
+      initial="hidden"
+      whileInView="visible"
+      viewport={{ once: true, amount: 0.18 }}
+      transition={{ delay }}
+    >
+      {children}
+    </motion.div>
+  );
 }
