@@ -23,6 +23,18 @@ body {
   .mobile-landing [class*="md:grid-cols-"] { grid-template-columns: minmax(0, 1fr) !important; }
 }
 
+/* Keep fixed controls and the opening cover inside the 430px invitation canvas. */
+.mobile-cover {
+  left: 50%;
+  right: auto;
+  width: min(100vw, 430px);
+  transform: translateX(-50%);
+}
+
+.mobile-music-player {
+  left: max(1.25rem, calc((100vw - 430px) / 2 + 1.25rem));
+}
+
 ::selection { background: #d4af37; color: #2c2021; }
 
 @layer utilities {

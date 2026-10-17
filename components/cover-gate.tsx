@@ -20,7 +20,7 @@ export function CoverGate() {
     <AnimatePresence>
       {!open && (
         <motion.div
-          className="fixed inset-0 z-50 grid place-items-center overflow-hidden bg-wine px-6 text-center text-cream"
+          className="mobile-cover fixed inset-0 z-50 grid place-items-center overflow-hidden bg-wine px-6 text-center text-cream"
           initial={{ opacity: 1 }}
           exit={{ opacity: 0, transition: { duration: 0.7 } }}
         >
