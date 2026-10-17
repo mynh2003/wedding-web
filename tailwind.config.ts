@@ -11,8 +11,10 @@ const config: Config = {
         ink: "#2C2021",
       },
       fontFamily: {
-        display: ["Georgia", "Times New Roman", "serif"],
-        sans: ["Arial", "Helvetica", "sans-serif"],
+        script: ["Dancing Script", "Brush Script MT", "Segoe Script", "cursive"],
+        display: ["Cormorant Garamond", "Georgia", "Times New Roman", "serif"],
+        serif: ["Cormorant Garamond", "Georgia", "Times New Roman", "serif"],
+        sans: ["Manrope", "Arial", "Helvetica", "sans-serif"],
       },
       boxShadow: {
         soft: "0 24px 80px rgba(72, 31, 35, 0.12)",

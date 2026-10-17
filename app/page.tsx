@@ -20,7 +20,7 @@ const story = [
 
 export default function Home() {
   return (
-    <main className="overflow-hidden bg-cream">
+    <main className="mobile-landing mx-auto w-full max-w-[430px] overflow-hidden bg-cream shadow-2xl">
       <CoverGate />
       <MusicPlayer />
 
@@ -28,9 +28,9 @@ export default function Home() {
         <div className="absolute inset-0 bg-[radial-gradient(circle_at_18%_20%,rgba(212,175,55,.18),transparent_28%),radial-gradient(circle_at_85%_80%,rgba(114,47,55,.12),transparent_30%)]" />
         <div className="paper-grid absolute inset-0 opacity-30 [background-image:radial-gradient(rgba(114,47,55,.09)_0.7px,transparent_0.7px)]" />
         <Reveal className="relative mx-auto max-w-4xl text-center">
-          <p className="mb-6 text-xs font-semibold uppercase tracking-[0.38em] text-wine">Save the date · 22.11.2026</p>
-          <p className="font-display text-2xl italic text-wine/80 md:text-3xl">Trân trọng kính mời</p>
-          <h1 className="mt-2 font-display text-7xl font-medium leading-[.85] tracking-tight text-wine sm:text-8xl md:text-[10rem]">Bình Minh <span className="text-gold">&amp;</span> Ninh Thị Huệ</h1>
+          <p className="mb-6 font-sans text-xs font-semibold uppercase tracking-[0.38em] text-wine">Save the date · 22.11.2026</p>
+          <p className="font-serif text-2xl italic text-wine/80 md:text-3xl">Trân trọng kính mời</p>
+          <h1 className="mt-2 font-script text-7xl font-semibold leading-[.85] tracking-tight text-wine sm:text-8xl md:text-[10rem]">Bình Minh <span className="font-script text-gold">&amp;</span> Ninh Thị Huệ</h1>
           <p className="mx-auto mt-10 max-w-md text-sm leading-7 text-ink/65 md:text-base">Cùng chúng mình viết tiếp câu chuyện yêu thương bằng một ngày thật đẹp và thật nhiều kỷ niệm.</p>
           <a href="#invitation" className="group mt-10 inline-flex items-center gap-3 rounded-full bg-wine px-7 py-3.5 text-sm font-semibold text-cream shadow-soft transition duration-300 hover:-translate-y-1 hover:bg-ink focus:outline-none focus:ring-2 focus:ring-gold focus:ring-offset-2">Xem lời mời <span className="transition-transform group-hover:translate-x-1">↓</span></a>
         </Reveal>

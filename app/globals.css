@@ -1,3 +1,5 @@
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@400;500;600;700&family=Dancing+Script:wght@500;600;700&family=Manrope:wght@400;500;600;700&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
@@ -12,7 +14,13 @@ body {
   margin: 0;
   background: #fdfbf7;
   color: #2c2021;
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: "Manrope", Arial, Helvetica, sans-serif;
+}
+
+/* The invitation is intentionally a mobile-first canvas, including on desktop. */
+@media (min-width: 768px) {
+  body:has(.mobile-landing) { background: #eadfce; }
+  .mobile-landing [class*="md:grid-cols-"] { grid-template-columns: minmax(0, 1fr) !important; }
 }
 
 ::selection { background: #d4af37; color: #2c2021; }
