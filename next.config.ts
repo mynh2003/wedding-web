@@ -2,6 +2,7 @@ import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
   reactStrictMode: true,
+  experimental: { cpus: 1 },
   async headers() {
     return [{
       source: "/(.*)",
@@ -11,6 +12,18 @@ const nextConfig: NextConfig = {
         { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
         { key: "Content-Security-Policy", value: "default-src 'self'; img-src 'self' data: https:; media-src 'self'; style-src 'self' 'unsafe-inline'; script-src 'self' 'unsafe-inline' 'unsafe-eval'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'" },
       ],
+    }, {
+      source: "/admin/:path*",
+      headers: [{ key: "Cache-Control", value: "private, no-store, max-age=0" }],
+    }, {
+      source: "/api/admin/:path*",
+      headers: [{ key: "Cache-Control", value: "private, no-store, max-age=0" }],
+    }, {
+      source: "/api/public/:path*",
+      headers: [{ key: "Cache-Control", value: "private, no-store, max-age=0" }],
+    }, {
+      source: "/i/:path*",
+      headers: [{ key: "Cache-Control", value: "private, no-store, max-age=0" }],
     }];
   },
 };

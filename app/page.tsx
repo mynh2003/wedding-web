@@ -3,6 +3,7 @@ import { CoverGate } from "@/components/cover-gate";
 import { Gallery } from "@/components/gallery";
 import { MusicPlayer } from "@/components/music-player";
 import { Reveal } from "@/components/reveal";
+import { WishesSection } from "@/components/wishes-section";
 import Image from "next/image";
 
 const timeline = [
@@ -65,7 +66,7 @@ export default function Home() {
 
       <section className="bg-wine px-6 py-24 text-cream md:py-32"><div className="mx-auto max-w-3xl text-center"><Reveal><p className="text-xs uppercase tracking-[.35em] text-gold">09 · Countdown</p><h2 className="mt-4 font-display text-5xl md:text-7xl">Đếm ngược đến ngày vui</h2><Countdown /></Reveal></div></section>
 
-      <section className="px-6 py-24 md:py-32"><div className="mx-auto max-w-2xl text-center"><Reveal><p className="text-xs uppercase tracking-[.35em] text-gold">10 · Wishes</p><h2 className="mt-4 font-display text-5xl text-wine md:text-7xl">Gửi lời yêu thương</h2><p className="mx-auto mt-6 max-w-md text-sm leading-7 text-ink/65">Form lời chúc sẽ được kết nối trong Phase 5. Hiện tại đây là phần giao diện nền để hoàn thiện trải nghiệm.</p><div className="mt-10 rounded-2xl border border-wine/10 bg-white/50 p-6 text-left shadow-soft"><label className="text-xs font-semibold uppercase tracking-[.2em] text-wine/60">Tên của bạn</label><input disabled placeholder="Nguyễn An" className="mt-3 w-full rounded-lg border border-wine/10 bg-cream px-4 py-3 text-sm outline-none" /><label className="mt-6 block text-xs font-semibold uppercase tracking-[.2em] text-wine/60">Lời chúc</label><textarea disabled rows={4} placeholder="Chúc hai bạn trăm năm hạnh phúc..." className="mt-3 w-full resize-none rounded-lg border border-wine/10 bg-cream px-4 py-3 text-sm outline-none" /><button disabled className="mt-6 w-full rounded-full bg-wine/40 px-6 py-3 text-sm font-semibold text-cream">Gửi lời chúc · Sắp ra mắt</button></div></Reveal></div></section>
+      <section className="px-6 py-24 md:py-32"><div className="mx-auto max-w-2xl text-center"><Reveal><p className="text-xs uppercase tracking-[.35em] text-gold">10 · Wishes</p><h2 className="mt-4 font-display text-5xl text-wine md:text-7xl">Gửi lời yêu thương</h2><p className="mx-auto mt-6 max-w-md text-sm leading-7 text-ink/65">Lời chúc sẽ được hiển thị sau khi admin duyệt.</p><div className="mt-10"><WishesSection /></div></Reveal></div></section>
 
       <section className="relative overflow-hidden bg-ink px-6 py-28 text-center text-cream md:py-40"><div className="absolute inset-0 bg-[radial-gradient(circle_at_50%_10%,rgba(212,175,55,.25),transparent_40%)]" /><Reveal className="relative mx-auto max-w-2xl"><p className="text-xs uppercase tracking-[.35em] text-gold">11 · Thank you</p><h2 className="mt-5 font-display text-6xl md:text-8xl">Cảm ơn bạn</h2><p className="mx-auto mt-6 max-w-md text-sm leading-7 text-cream/65">Sự hiện diện và những lời chúc của bạn là món quà quý giá nhất dành cho chúng mình.</p><p className="mt-12 font-display text-3xl italic text-gold">Bình Minh &amp; Ninh Thị Huệ</p></Reveal></section>
 
