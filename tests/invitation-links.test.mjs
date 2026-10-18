@@ -53,6 +53,7 @@ function route({ authorized = true, guest = { id: guestId }, link = { token_encr
   return { calls, handlers: load("app/api/admin/guests/[id]/link/route.ts", { NEXT_PUBLIC_SITE_URL: "https://invitation.example" }, {
     "next/server": { NextResponse },
     "@/lib/auth/admin": { getAdmin: async () => authorized ? { admin: { wedding_id: weddingId }, supabase } : null },
+    "@/lib/auth/confirm-guest-action": { confirmGuestAction: async () => null },
     "@/lib/invitations/token": tokens,
     "@/lib/invitations/storage": encryption,
   }) };

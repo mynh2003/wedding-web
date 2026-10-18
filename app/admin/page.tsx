@@ -5,7 +5,7 @@ import { AdminHeading, AdminIcon } from "@/components/admin-shell";
 export default async function AdminPage() {
   const { user, admin, supabase } = await requireAdmin();
   const [guests, pending, content, recent] = await Promise.all([
-    supabase.from("guests").select("id", { count: "exact", head: true }).eq("wedding_id", admin.wedding_id),
+    supabase.from("guests").select("id", { count: "exact", head: true }).eq("wedding_id", admin.wedding_id).is("deleted_at", null),
     supabase.from("wishes").select("id", { count: "exact", head: true }).eq("wedding_id", admin.wedding_id).eq("status", "pending"),
     supabase.from("wedding_content").select("section_key", { count: "exact", head: true }).eq("wedding_id", admin.wedding_id).eq("is_published", true),
     supabase.from("wishes").select("id, author_name, message, status, created_at").eq("wedding_id", admin.wedding_id).order("created_at", { ascending: false }).limit(4),

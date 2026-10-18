@@ -10,7 +10,7 @@
     "audit": "node scripts/security-audit.mjs",
     "lint": "eslint .",
     "typecheck": "tsc --noEmit",
-    "test": "node --test tests/phase3-security.test.mjs tests/phase4-security.test.mjs tests/phase5-security.test.mjs tests/phase6-security.test.mjs tests/phase7-security.test.mjs tests/domain-isolation.test.mjs tests/invitation-links.test.mjs tests/media-upload.test.mjs tests/wedding-calendar.test.mjs"
+    "test": "node --test tests/phase3-security.test.mjs tests/phase4-security.test.mjs tests/phase5-security.test.mjs tests/phase6-security.test.mjs tests/phase7-security.test.mjs tests/domain-isolation.test.mjs tests/invitation-links.test.mjs tests/media-upload.test.mjs tests/wedding-calendar.test.mjs tests/guest-attendance.test.mjs tests/guest-action-confirmation.test.mjs tests/guest-deletion.test.mjs tests/linked-wish-deletion.test.mjs tests/inactive-guest-wishes.test.mjs tests/wedding-public.test.mjs tests/font-readiness.test.mjs tests/invitation-copy.test.mjs"
   },
   "dependencies": {
     "@supabase/ssr": "^0.7.0",

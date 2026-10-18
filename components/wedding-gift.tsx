@@ -1,27 +1,10 @@
-import { createClient } from "@/lib/supabase/server";
+import { getPublicWedding } from "@/lib/wedding-public";
 import { GiftDialog, type GiftRecipient } from "@/components/gift-dialog";
 
 export async function WeddingGift({ variant, weddingSlug, groomName, brideName }: { variant?: "bride" | "groom"; weddingSlug?: string; groomName: string; brideName: string }) {
-  let content: Record<string, unknown> = {};
-  const imageUrls: Record<string, string> = {};
-  if (process.env.NEXT_PUBLIC_SUPABASE_URL && process.env.NEXT_PUBLIC_SUPABASE_PUBLISHABLE_KEY) {
-    const supabase = await createClient();
-    const { data: wedding } = await supabase.from("weddings").select("id").eq("slug", weddingSlug ?? process.env.NEXT_PUBLIC_WEDDING_SLUG ?? "binh-minh-ninh-hue").eq("is_published", true).maybeSingle();
-    if (wedding) {
-      const [{ data: giftContent }, { data: allAssets }] = await Promise.all([
-        supabase.from("wedding_content").select("content").eq("wedding_id", wedding.id).eq("section_key", "gifts").eq("is_published", true).maybeSingle(),
-        supabase.from("media_assets").select("id, storage_path").eq("wedding_id", wedding.id).eq("is_public", true),
-      ]);
-      content = (giftContent?.content ?? {}) as Record<string, unknown>;
-      const ids = [content.groom_qr_media_id, content.bride_qr_media_id, content.gift_banner_media_id, content.groom_banner_media_id, content.bride_banner_media_id].filter((id): id is string => typeof id === "string");
-      await Promise.all(ids.map(async (id) => {
-        const asset = allAssets?.find((item) => item.id === id);
-        if (!asset) return;
-        const { data: signed } = await supabase.storage.from("wedding-private").createSignedUrl(asset.storage_path, 3600);
-        if (signed?.signedUrl) imageUrls[id] = signed.signedUrl;
-      }));
-    }
-  }
+  const loaded = await getPublicWedding(weddingSlug);
+  const content = loaded?.content.gifts ?? {};
+  const imageUrls = loaded?.imageUrls ?? {};
   const text = (key: string) => typeof content[key] === "string" ? (content[key] as string).trim() : "";
   const image = (key: string) => { const value = text(key); return /^(https:\/\/|\/(?!\/))/.test(value) ? value : ""; };
   const sharedBanner = imageUrls[text("gift_banner_media_id")] || image("gift_banner_url") || imageUrls[text("groom_banner_media_id")] || imageUrls[text("bride_banner_media_id")] || image("groom_banner_url") || image("bride_banner_url") || "/placeholders/ring-wide.svg";

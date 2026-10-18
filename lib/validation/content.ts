@@ -1,6 +1,6 @@
 export type ContentInput = { sectionKey: string; content: Record<string, unknown>; isPublished: boolean };
 
-const allowedKeys = new Set(["hero", "invitation", "families", "venue", "story", "timeline", "dress_code", "gifts"]);
+const allowedKeys = new Set(["hero", "invitation", "families", "venue", "story", "timeline", "dress_code", "gifts", "copy"]);
 function safeText(value: unknown, max: number) { return typeof value === "string" && value.length <= max ? value : null; }
 
 export function parseContentInput(value: unknown): { value: ContentInput } | { error: string } {
@@ -20,6 +20,12 @@ export function parseContentInput(value: unknown): { value: ContentInput } | { e
   if (sectionKey === "families") {
     const error = calendarRangeError(content.calendar_start_date, content.calendar_end_date);
     if (error) return { error };
+  }
+  if (sectionKey === "copy") {
+    for (const key of ["quote_text", "rsvp_text", "thank_you_text"]) {
+      if (typeof content[key] !== "string") return { error: "Vui lòng nhập đầy đủ các đoạn nội dung." };
+    }
+    if (!Array.isArray(content.story_pages) || content.story_pages.length !== 4) return { error: "Chuyện tình yêu cần đủ 4 đoạn nội dung." };
   }
   return { value: { sectionKey, content, isPublished: body.isPublished === true } };
 }

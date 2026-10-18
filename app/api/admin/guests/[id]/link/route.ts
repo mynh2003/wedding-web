@@ -2,6 +2,7 @@ import { NextResponse, type NextRequest } from "next/server";
 import { getAdmin } from "@/lib/auth/admin";
 import { createInvitationToken, hashInvitationToken } from "@/lib/invitations/token";
 import { decryptInvitationToken, encryptInvitationToken } from "@/lib/invitations/storage";
+import { confirmGuestAction } from "@/lib/auth/confirm-guest-action";
 
 export const dynamic = "force-dynamic";
 const headers = { "Cache-Control": "private, no-store", "Referrer-Policy": "no-referrer" };
@@ -11,7 +12,7 @@ export async function GET(request: NextRequest, { params }: RouteContext) {
   const context = await getAdmin();
   if (!context) return NextResponse.json({ error: "Unauthorized" }, { status: 401, headers });
   const { id } = await params;
-  const { data: guest, error: guestError } = await context.supabase.from("guests").select("id").eq("id", id).eq("wedding_id", context.admin.wedding_id).maybeSingle();
+  const { data: guest, error: guestError } = await context.supabase.from("guests").select("id").eq("id", id).eq("wedding_id", context.admin.wedding_id).is("deleted_at", null).maybeSingle();
   if (guestError) return NextResponse.json({ error: "Không thể tải thông tin khách mời." }, { status: 500, headers });
   if (!guest) return NextResponse.json({ error: "Không tìm thấy khách mời." }, { status: 404, headers });
   const { data: link, error } = await context.supabase.from("invitation_links").select("token_hash, token_encrypted").eq("guest_id", id).eq("wedding_id", context.admin.wedding_id).is("revoked_at", null).order("created_at", { ascending: false }).limit(1).maybeSingle();
@@ -32,7 +33,9 @@ export async function POST(request: NextRequest, { params }: RouteContext) {
   const context = await getAdmin();
   if (!context) return NextResponse.json({ error: "Unauthorized" }, { status: 401, headers });
   const { id } = await params;
-  const { data: guest } = await context.supabase.from("guests").select("id").eq("id", id).eq("wedding_id", context.admin.wedding_id).single();
+  const confirmationError = await confirmGuestAction(request, context, id, "regenerate-link");
+  if (confirmationError) return confirmationError;
+  const { data: guest } = await context.supabase.from("guests").select("id").eq("id", id).eq("wedding_id", context.admin.wedding_id).is("deleted_at", null).single();
   if (!guest) return NextResponse.json({ error: "Guest not found" }, { status: 404, headers });
   const { rawToken, tokenHash } = createInvitationToken();
   let tokenEncrypted: string;

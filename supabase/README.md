@@ -1,5 +1,35 @@
 # Supabase Phase 3 setup
 
+## Tab Content trong Nội dung & hình ảnh
+
+Mở **Admin → Nội dung & hình ảnh → Content** để sửa câu trích dẫn về hôn nhân, bốn đoạn chuyện tình yêu, lời nhắn trước form xác nhận tham dự và lời cảm ơn cuối thiệp. Chọn **Lưu & xuất bản nội dung** để cập nhật chung trên thiệp nhà trai, nhà gái và link riêng. Nội dung đang sửa được giữ khi chuyển tab; trang sẽ nhắc nếu rời đi khi chưa lưu.
+
+Dữ liệu lưu trong section `copy` của `wedding_content` với các trường `quote_text`, `story_pages` (4 đoạn), `rsvp_text`, `thank_you_text`. Nội dung thuần văn bản; Enter được giữ để xuống dòng. Mỗi đoạn chuyện tình yêu tối đa 500 ký tự, các ô còn lại tối đa 2.000 ký tự. Để trống một ô sẽ dùng nội dung mặc định hiện tại. Không cần migration mới; lần lưu đầu tạo section này tự động bằng API admin hiện có.
+
+## Tạm ẩn lời chúc của khách trong thùng rác
+
+Chạy `migrations/202610180011_inactive_guest_wishes.sql` sau migration 010. Khi xóa mềm khách, lời chúc liên kết được giữ để khôi phục nhưng bị gỡ khỏi thiệp ngay trong cùng transaction. Admin thấy lời chúc trong mục **Khách trong thùng rác** và không thể duyệt hiển thị khi chưa khôi phục khách. Khôi phục chỉ hiển thị lại lời chúc vẫn được duyệt; lời chúc chờ duyệt hoặc đã ẩn vẫn không hiển thị. Lời chúc không liên kết khách không bị ảnh hưởng. Migration cũng ẩn lời chúc của khách đã ở thùng rác từ trước.
+
+## Xóa mềm, khôi phục và xóa vĩnh viễn khách mời
+
+Chạy lần lượt `migrations/202610180009_guest_deletion.sql` và `migrations/202610180010_linked_wish_deletion.sql` sau `202610180008_guest_attendance.sql`, trước khi triển khai mã mới. Migration bổ sung thùng rác và xử lý dữ liệu liên kết, không tự xóa khách hiện có.
+
+- **Đang hoạt động → Xóa:** chuyển vào thùng rác, giữ thông tin, trạng thái tham dự và lời chúc. Link tạm ngừng mở thiệp và gửi phản hồi; admin không được tạo lại link hoặc chỉnh sửa khách trong thùng rác.
+- **Thùng rác → Khôi phục:** đưa khách về danh sách, bật lại các link chưa bị thu hồi. Link đã thu hồi trước đó vẫn không hoạt động.
+- **Thùng rác → Xóa vĩnh viễn:** chỉ cho phép với khách đã xóa mềm, xóa bản ghi khách, toàn bộ link và lời chúc liên kết trong cùng transaction. Lời chúc không liên kết với khách vẫn do admin quản lý riêng. Không thể khôi phục sau bước này.
+
+Mỗi thao tác yêu cầu xác nhận đúng khách, đúng hành động và nhập lại mật khẩu quản trị. Backend và SQL kiểm tra quyền theo đám cưới; thao tác với cùng một khách được khóa để tránh xung đột với phản hồi hoặc tạo lại link. Danh sách, tìm kiếm và phân trang tách riêng khách đang hoạt động và khách trong thùng rác; số khách ở Tổng quan chỉ tính khách đang hoạt động.
+
+## Xóa lời chúc liên kết khi xóa vĩnh viễn khách
+
+Chạy `migrations/202610180010_linked_wish_deletion.sql` sau `202610180009_guest_deletion.sql`. Xóa mềm giữ lời chúc để khôi phục. Xóa vĩnh viễn khách sẽ tự xóa lời chúc có `guest_id` liên kết và bản hiển thị công khai của lời chúc đó. Lời chúc có `guest_id = null` không bị ảnh hưởng và chỉ bị xóa khi admin thao tác riêng. Migration không tự xóa dữ liệu hiện có.
+
+## Trạng thái tham dự và phản hồi mới nhất
+
+Chạy `migrations/202610180008_guest_attendance.sql` sau các migration hiện có, trước khi triển khai mã mới. Admin → Khách mời hiển thị **Chưa xác nhận**, **Có tham gia**, hoặc **Bận không tham gia**. Khách có link riêng gửi lại form sẽ cập nhật trạng thái và thay lời chúc cũ trong cùng transaction; lời chúc mới trở về chờ duyệt. Tạo lại link vẫn giữ phản hồi của khách. Link bị thu hồi không thể gửi phản hồi.
+
+Form từ link chung vẫn gửi lời chúc như trước; không suy đoán danh tính bằng tên hoặc IP. Các lần gửi trước bản cập nhật chưa lưu trạng thái hay liên kết khách nên không thể tự khôi phục trạng thái từ dữ liệu đó.
+
 ## Lịch ngày cưới
 
 Chạy `migrations/202610180006_wedding_calendar.sql` trong Supabase SQL Editor sau các migration hiện có. Chạy lại không ghi đè nội dung hay trạng thái xuất bản.
@@ -56,6 +86,8 @@ Run `migrations/202610170001_phase5_wishes.sql` after Phase 3 and Phase 4. This 
 Run `202610160002_phase4_token_resolution.sql` after the Phase 3 migration. The app generates 32-byte random tokens on the server, stores their SHA-256 hash for public resolution. With the recoverable-link migration below, it also stores encrypted tokens so the verified administrator can reopen a link later. The public resolver returns only the guest display name and published wedding slug; it does not return token hashes or guest contact data.
 
 ## Lưu và mở lại link thiệp
+
+Trong danh sách khách mời, **Xóa khách** và **Tạo lại link** yêu cầu xác nhận tác động và nhập lại mật khẩu quản trị cho từng thao tác. Backend kiểm tra mật khẩu của đúng tài khoản đang đăng nhập trước khi thay đổi dữ liệu; phiên xác thực tạm không thay thế phiên đăng nhập hiện tại. Không cần migration riêng cho bước xác thực này. Xóa mềm giữ lời chúc để khôi phục; xóa vĩnh viễn xóa cả lời chúc liên kết với khách. Lời chúc không liên kết với khách do admin xóa riêng. Tạo lại link giữ thông tin và phản hồi của khách.
 
 1. Chạy toàn bộ file `migrations/202610180002_recoverable_invitation_links.sql` trong Supabase SQL Editor sau các migration hiện có. Migration bổ sung bản mã vào bảng link và hàm thay thế link trong một transaction; giữ nguyên RLS dành cho admin.
 2. Trên máy chủ backend, đặt `INVITATION_LINK_ENCRYPTION_KEY` thành chuỗi 64 ký tự hex ngẫu nhiên (32 byte). Sinh bằng lệnh dưới đây, lưu trong secret của hosting và khởi động lại backend. Không dùng tiền tố NEXT_PUBLIC_. Local đã có khóa riêng trong file .env được Git bỏ qua; không đưa file này lên Git.

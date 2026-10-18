@@ -9,7 +9,7 @@ export async function PATCH(request: NextRequest, { params }: { params: Promise<
   const body = await request.json().catch(() => null) as { status?: string } | null;
   if (!body || !["approved", "rejected", "pending"].includes(body.status ?? "")) return NextResponse.json({ error: "Trạng thái không hợp lệ." }, { status: 400 });
   const { error } = await context.supabase.from("wishes").update({ status: body.status, reviewed_at: body.status === "pending" ? null : new Date().toISOString() }).eq("id", id).eq("wedding_id", context.admin.wedding_id);
-  if (error) return NextResponse.json({ error: "Không thể cập nhật lời chúc." }, { status: 500 });
+  if (error) return NextResponse.json({ error: error.code === "23514" ? "Khách mời đang ở thùng rác. Hãy khôi phục khách trước khi duyệt lời chúc." : "Không thể cập nhật lời chúc." }, { status: error.code === "23514" ? 409 : 500, headers: { "Cache-Control": "no-store" } });
   return NextResponse.json({ ok: true }, { headers: { "Cache-Control": "no-store" } });
 }
 

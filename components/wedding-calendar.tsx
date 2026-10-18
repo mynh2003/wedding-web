@@ -22,7 +22,7 @@ export function WeddingCalendar({ weddingDate, startDate, endDate, imageUrl }: {
   const currentMonth = year * 12 + month + 1;
 
   return <section aria-label="Lịch ngày cưới" className="wedding-month-banner relative isolate aspect-[6/7] w-full overflow-hidden bg-cream text-white">
-    {imageUrl && <Image src={imageUrl} alt="Ảnh kỷ niệm ngày cưới" fill unoptimized sizes="(max-width: 430px) 100vw, 430px" className="object-cover" />}
+    {imageUrl && <Image src={imageUrl} alt="Ảnh kỷ niệm ngày cưới" fill sizes="(max-width: 430px) 100vw, 430px" className="object-cover" />}
     <div className="relative flex h-full flex-col justify-center px-[7%] py-[4%] text-center">
       <p aria-label="SAVE The DATE" className="wedding-month-banner__title flex items-baseline justify-center gap-[.18em] whitespace-nowrap">
         <span>SAVE</span><span className="wedding-month-banner__title-script">The</span><span>DATE</span>

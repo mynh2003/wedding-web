@@ -40,12 +40,12 @@ export function ScrollPhotoPair({ images = [] }: { images?: (string | undefined)
     <div ref={pairRef} className="scroll-photo-pair" role="group" aria-label="Hai ảnh kỷ niệm của chúng mình">
       <motion.div className="scroll-photo-pair__frame" style={{ y: reduceMotion ? 0 : leftY }}>
         <div className="scroll-photo-pair__image">
-          <Image src={images[0] || "/placeholders/ring-portrait.svg"} unoptimized={!!images[0]} alt="Khoảnh khắc tình yêu của đôi uyên ương" fill sizes="(max-width: 430px) 43vw, 180px" className="object-cover" />
+          <Image src={images[0] || "/placeholders/ring-portrait.svg"} alt="Khoảnh khắc tình yêu của đôi uyên ương" fill sizes="(max-width: 430px) 43vw, 180px" className="object-cover" />
         </div>
       </motion.div>
       <motion.div className="scroll-photo-pair__frame scroll-photo-pair__frame--right" style={{ y: reduceMotion ? 0 : rightY }}>
         <div className="scroll-photo-pair__image">
-          <Image src={images[1] || "/placeholders/ring-detail.svg"} unoptimized={!!images[1]} alt="Chi tiết nhẫn cưới và lời hẹn ước" fill sizes="(max-width: 430px) 43vw, 180px" className="object-cover" />
+          <Image src={images[1] || "/placeholders/ring-detail.svg"} alt="Chi tiết nhẫn cưới và lời hẹn ước" fill sizes="(max-width: 430px) 43vw, 180px" className="object-cover" />
         </div>
       </motion.div>
     </div>

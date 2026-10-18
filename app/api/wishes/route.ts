@@ -3,6 +3,7 @@ import { createHash } from "node:crypto";
 import { createClient } from "@/lib/supabase/server";
 import { readJson } from "@/lib/http/body";
 import { parseWishInput } from "@/lib/validation/wish";
+import { hashInvitationToken } from "@/lib/invitations/token";
 
 export const dynamic = "force-dynamic";
 const slug = process.env.NEXT_PUBLIC_WEDDING_SLUG ?? "binh-minh-ninh-hue";
@@ -25,7 +26,9 @@ export async function POST(request: NextRequest) {
   const forwarded = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
   const fingerprint = createHash("sha256").update(`${process.env.WISH_RATE_LIMIT_SECRET ?? process.env.NEXT_PUBLIC_SUPABASE_URL}:${forwarded}`).digest("hex");
   const supabase = await createClient();
-  const { error } = await supabase.rpc("submit_public_wish", { input_slug: slug, input_author: parsed.value.authorName, input_message: parsed.value.message, input_fingerprint: fingerprint, input_side: parsed.value.side ?? null });
+  const { error } = parsed.value.invitationToken
+    ? await supabase.rpc("submit_invitation_response", { input_token_hash: hashInvitationToken(parsed.value.invitationToken), input_author: parsed.value.authorName, input_message: parsed.value.message, input_attendance: parsed.value.attendance, input_fingerprint: fingerprint })
+    : await supabase.rpc("submit_public_wish", { input_slug: slug, input_author: parsed.value.authorName, input_message: parsed.value.message, input_fingerprint: fingerprint, input_side: parsed.value.side ?? null });
   if (error) {
     const limited = error.message.includes("rate limited");
     return NextResponse.json({ error: limited ? "Bạn đã gửi quá nhiều lời chúc. Vui lòng thử lại sau." : "Không thể gửi lời chúc lúc này." }, { status: limited ? 429 : 400, headers: { "Retry-After": limited ? "600" : "0", "Cache-Control": "no-store" } });

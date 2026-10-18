@@ -18,5 +18,5 @@ export default async function PersonalInvitation({ params }: { params: Promise<{
   const { data, error } = await supabase.rpc("resolve_invitation_token", { input_token_hash: hashInvitationToken(token) }).maybeSingle() as { data: { guest_name: string; wedding_slug: string; guest_group: "groom" | "bride" } | null; error: unknown };
   if (error || !data) notFound();
   if (data.guest_group !== "groom" && data.guest_group !== "bride") notFound();
-  return <WeddingPage guestName={data.guest_name} variant={data.guest_group} weddingSlug={data.wedding_slug} />;
+  return <WeddingPage guestName={data.guest_name} variant={data.guest_group} weddingSlug={data.wedding_slug} invitationToken={token} />;
 }

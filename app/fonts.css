@@ -1,0 +1,27 @@
+/* Local WOFF2 subsets. Filenames include a content hash for immutable caching. */
+@font-face { font-family: "Montserrat"; src: url("/font/browser/montserrat.f7e72cc75c07.woff2") format("woff2"); font-weight: 400 700; font-style: normal; font-display: swap; }
+@font-face { font-family: "Montserrat"; src: url("/font/browser/montserrat-italic.f72e1ad7176d.woff2") format("woff2"); font-weight: 400 700; font-style: italic; font-display: swap; }
+@font-face { font-family: "Playfair Display"; src: url("/font/browser/playfairdisplay.4dc17add8cc9.woff2") format("woff2"); font-weight: 400 800; font-style: normal; font-display: swap; }
+@font-face { font-family: "Playfair Display"; src: url("/font/browser/playfairdisplay-italic.1b43cccee1e4.woff2") format("woff2"); font-weight: 400 800; font-style: italic; font-display: swap; }
+@font-face { font-family: "Flavinda"; src: url("/font/browser/flavinda.d1432ccd4e6f.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+@font-face { font-family: "Cormorant Garamond"; src: url("/font/browser/cormorantgaramond.7dbb3a3c4e99.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: block; }
+@font-face { font-family: "Lora Reference"; src: url("/font/browser/lora-reference-regular.d874a0cf59ef.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: "Great Vibes"; src: url("/font/browser/greatvibes-regular.25d5460f9b8a.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: "Be Vietnam Pro"; src: url("/font/browser/bevietnampro-regular.3975ab951be9.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: "Be Vietnam Pro"; src: url("/font/browser/bevietnampro-medium.5f01fdb3cbd3.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: swap; }
+@font-face { font-family: "Be Vietnam Pro"; src: url("/font/browser/bevietnampro-semibold.218044c17058.woff2") format("woff2"); font-weight: 600; font-style: normal; font-display: swap; }
+@font-face { font-family: "Be Vietnam Pro"; src: url("/font/browser/bevietnampro-bold.3bb06e5a6b78.woff2") format("woff2"); font-weight: 700; font-style: normal; font-display: swap; }
+@font-face { font-family: "Montserrat Fallback"; src: local("Arial"); ascent-override: 87.85%; descent-override: 22.78%; line-gap-override: 0%; size-adjust: 110.19%; }
+@font-face { font-family: "Playfair Display Fallback"; src: local("Times New Roman"); ascent-override: 97.38%; descent-override: 22.59%; line-gap-override: 0%; size-adjust: 111.11%; }
+@font-face { font-family: "Cormorant Garamond Fallback"; src: local("Times New Roman"); ascent-override: 96.16%; descent-override: 29.87%; line-gap-override: 0%; size-adjust: 96.09%; }
+@font-face { font-family: "Lora Reference Fallback"; src: local("Times New Roman"); ascent-override: 87.53%; descent-override: 23.84%; line-gap-override: 0%; size-adjust: 114.93%; }
+@font-face { font-family: "Be Vietnam Pro Fallback"; src: local("Arial"); ascent-override: 90.08%; descent-override: 23.87%; line-gap-override: 0%; size-adjust: 111.01%; }
+:root {
+  --font-montserrat: "Montserrat", "Montserrat Fallback", Arial, sans-serif;
+  --font-playfair: "Playfair Display", "Playfair Display Fallback", Georgia, serif;
+  --font-flavinda: "Flavinda";
+  --font-cormorant: "Cormorant Garamond", "Cormorant Garamond Fallback", serif;
+  --font-lora: "Lora Reference", "Lora Reference Fallback", Georgia, serif;
+  --font-great-vibes: "Great Vibes";
+  --font-vietnam: "Be Vietnam Pro", "Be Vietnam Pro Fallback", Arial, sans-serif;
+}

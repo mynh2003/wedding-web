@@ -9,6 +9,8 @@ const realtimeOrigin = supabaseOrigin.replace(/^http/, "ws");
 const connectSources = ["'self'", deployment.backendOrigin, supabaseOrigin, realtimeOrigin].filter(Boolean).join(" ");
 
 const nextConfig: NextConfig = {
+  // Allow production verification without overwriting an active dev build.
+  distDir: process.env.NEXT_BUILD_DIR || ".next",
   reactStrictMode: true,
   images: {
     remotePatterns: supabaseStorageUrl ? [{
@@ -29,6 +31,9 @@ const nextConfig: NextConfig = {
         { key: "Permissions-Policy", value: "camera=(), microphone=(), geolocation=()" },
         { key: "Content-Security-Policy", value: `default-src 'self'; connect-src ${connectSources}; img-src 'self' data: https:; media-src 'self'; font-src 'self' https://fonts.gstatic.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com; script-src 'self' 'unsafe-inline' 'unsafe-eval'; frame-ancestors 'none'; base-uri 'self'; form-action 'self'` },
       ],
+    }, {
+      source: "/font/browser/:path*",
+      headers: [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }],
     }, {
       source: "/admin/:path*",
       headers: [{ key: "Cache-Control", value: "private, no-store, max-age=0" }],

@@ -2,12 +2,17 @@
 
 import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
 import Image from "next/image";
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
+import { loadElementFonts } from "@/lib/font-readiness";
+import envelopeTexture from "@/public/envelope-burgundy-weave.webp";
+import waxSeal from "@/public/wax-seal-monogram-mh-384.webp";
 
 const EXIT_DURATION = 1.15;
 const BUTTON_FADE_DURATION = 0.3;
 
 export function CoverGate() {
+  const title = useRef<HTMLHeadingElement>(null);
+  const [fontsReady, setFontsReady] = useState(false);
   const [coverRemoved, setCoverRemoved] = useState(false);
   const [heroReady, setHeroReady] = useState(false);
   const [imageReady, setImageReady] = useState(false);
@@ -15,6 +20,16 @@ export function CoverGate() {
   const [phase, setPhase] = useState<"idle" | "fading" | "opening">("idle");
   const opening = phase === "opening";
   const reduceMotion = useReducedMotion();
+
+  useEffect(() => {
+    let active = true;
+    const heading = title.current;
+    if (heading) {
+      void loadElementFonts([heading, ...heading.querySelectorAll<HTMLElement>("span")])
+        .then(() => { if (active) setFontsReady(true); });
+    }
+    return () => { active = false; };
+  }, []);
 
   useEffect(() => {
     const page = document.querySelector<HTMLElement>(".mobile-landing");
@@ -68,10 +83,13 @@ export function CoverGate() {
   }
 
   return (
+    <>
+    <link rel="preload" as="image" href={envelopeTexture.src} fetchPriority="high" />
     <AnimatePresence onExitComplete={() => window.dispatchEvent(new Event("wedding:cover-cleared"))}>
       {!coverRemoved && (
         <motion.div
           className="mobile-cover fixed inset-0 z-50 flex items-center justify-center overflow-hidden bg-transparent text-center text-wine"
+          style={{ "--envelope-texture": `url("${envelopeTexture.src}")` } as React.CSSProperties}
           initial={{ opacity: 1 }}
           exit={{ opacity: 0, transition: { duration: reduceMotion ? 0 : .3 } }}
         >
@@ -85,7 +103,7 @@ export function CoverGate() {
               <div className="envelope-fabric envelope-top-surface absolute inset-0" />
             </div>
             <div className="envelope-save-date absolute z-30 text-[#f1eadb]">
-              <h1 className="envelope-save-date-title" aria-label="Save the Date">
+              <h1 ref={title} className="envelope-save-date-title" style={{ visibility: fontsReady ? "visible" : "hidden" }} aria-label="Save the Date">
                 <span className="envelope-save-word">SAVE</span>
                 <span className="envelope-date-line"><span className="envelope-the-word">the</span><span className="envelope-date-word">DATE</span></span>
               </h1>
@@ -102,7 +120,7 @@ export function CoverGate() {
                 title="Mở thiệp"
                 className="type-button block h-[7.5rem] w-[7.5rem] rounded-full disabled:cursor-wait"
               >
-                <Image src="/wax-seal-monogram-mh.png" alt="" width={1254} height={1254} priority className={`${phase === "idle" ? "envelope-seal-pulse " : ""}h-full w-full object-contain drop-shadow-[0_4px_6px_rgba(22,9,7,.4)]`} />
+                <Image src={waxSeal} alt="" width={384} height={384} sizes="120px" unoptimized priority className={`${phase === "idle" ? "envelope-seal-pulse " : ""}h-full w-full object-contain drop-shadow-[0_4px_6px_rgba(22,9,7,.4)]`} />
               </motion.button>
               </div>
             </div>
@@ -121,5 +139,6 @@ export function CoverGate() {
         </motion.div>
       )}
     </AnimatePresence>
+    </>
   );
 }
