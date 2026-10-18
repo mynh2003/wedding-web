@@ -1,0 +1,3 @@
+Built-in image_gen edit of wedding-gift-ml.png.
+Edit 1: Change only the ivory ML monogram to overlapping serif MH, with M upper-left and H lower-right and a graceful calligraphic flourish. Preserve box, ribbon, lighting, textures and transparency.
+Edit 2: Straighten the longitudinal ribbon parallel to the lid side edges in perspective, at a constant distance from the right edge; align its continuation on the front of the box. Balance the bow at the ribbon intersection. Preserve MH monogram, burgundy box, camera, materials, lighting and transparent background.

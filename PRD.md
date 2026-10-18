@@ -56,6 +56,7 @@ Học hỏi từ các theme Shopify cao cấp, giao diện website chú trọng 
 
 * **Bảng màu chủ đạo**: Đỏ rượu vang (`#722F37`), Màu Be/Kem (`#FDFBF7`), Vàng đồng accent (`#D4AF37`).  
 * **Typography**: Serif cho tên cô dâu chú rể và tiêu đề section (mang tính trang trọng); Sans-serif cho nội dung văn bản dài và Dashboard (dễ đọc).
+* **Placeholder ảnh dùng chung**: Khi chưa có ảnh thật, dùng SVG placeholder nền xám trung tính (`#777777` hoặc sắc xám tương đương), không gắn minh họa nhẫn/hoa cụ thể để có thể tái sử dụng cho mọi khung ảnh. Có thể phủ gradient/màu chữ theo từng bố cục; giữ nguyên tỷ lệ khung ảnh và dùng `object-fit: cover`.
 
 ## **3.2. Hiệu ứng Tải lần đầu & Xuất hiện (Initial Load & Entrance)**
 
@@ -99,12 +100,13 @@ Học hỏi từ các theme Shopify cao cấp, giao diện website chú trọng 
 ## **Các loại link**
 
 * Link chung nhà trai (`/wedding/groom`) & nhà gái (`/wedding/bride`).  
-* Link riêng (`/i/<random-token>`): Hiển thị đích danh "Trân trọng kính mời \[Tên Khách\]".
+* Link riêng (`/i/<random-token>`): Mở cùng landing page/thiệp chính và hiển thị section cá nhân hóa theo đúng định dạng: `TRÂN TRỌNG KÍNH MỜI` (xuống dòng) `[Tên Khách]`.
+* Link chung: Ẩn hoàn toàn section `TRÂN TRỌNG KÍNH MỜI`; không hiển thị placeholder tên khách và không kích hoạt logic cá nhân hóa.
 
 ## **Yêu cầu bảo mật**
 
 * Token sinh bằng CSPRNG ngẫu nhiên 32-byte ở server.  
-* Database **chỉ lưu SHA-256 hash** của token.  
+* Database lưu SHA-256 hash để xác minh token và bản mã AES-256-GCM để quản trị viên mở lại link. Khóa giải mã chỉ nằm trên máy chủ; không lưu token thô.
 * Quản trị viên có thể thu hồi và re-generate token bất kỳ lúc nào.
 
 # **6\. Tóm tắt Database Schema**
@@ -501,7 +503,7 @@ Yêu cầu:
 - Triển khai đúng từng phase, không làm toàn bộ dự án trong một lần.
 - Bảo mật Admin Dashboard phải được kiểm tra ở server; không chỉ ẩn giao diện client.
 - Dùng Supabase Auth theo hướng dẫn SSR hiện hành, RLS deny-by-default và không để service-role key ở client.
-- Link cá nhân dùng token ngẫu nhiên sinh ở server, database chỉ lưu hash.
+- Link cá nhân dùng token ngẫu nhiên sinh ở server; database lưu hash và bản mã để admin mở lại, không lưu token thô.
 - Public landing ưu tiên static/cached content; không cache response chứa dữ liệu cá nhân hóa sai phạm vi.
 - Countdown chạy client-side, không gọi API theo từng giây.
 - Tối ưu ảnh/media và pagination; không tuyên bố chịu tải không giới hạn.

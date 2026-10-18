@@ -6,15 +6,19 @@ const config: Config = {
     extend: {
       colors: {
         wine: "#722F37",
-        cream: "#FDFBF7",
+        cream: "#FDFCFB",
         gold: "#D4AF37",
         ink: "#2C2021",
       },
       fontFamily: {
-        script: ["Dancing Script", "Brush Script MT", "Segoe Script", "cursive"],
-        display: ["Cormorant Garamond", "Georgia", "Times New Roman", "serif"],
-        serif: ["Cormorant Garamond", "Georgia", "Times New Roman", "serif"],
-        sans: ["Manrope", "Arial", "Helvetica", "sans-serif"],
+        script: ["Great Vibes", "cursive"],
+        accent: ["Great Vibes", "cursive"],
+        flavinda: ["Flavinda", "Great Vibes", "cursive"],
+        body: ["Montserrat", "Arial", "sans-serif"],
+        vietnam: ["Be Vietnam Pro", "Arial", "sans-serif"],
+        display: ["Playfair Display", "Georgia", "serif"],
+        serif: ["Playfair Display", "Georgia", "serif"],
+        sans: ["Montserrat", "Arial", "sans-serif"],
       },
       boxShadow: {
         soft: "0 24px 80px rgba(72, 31, 35, 0.12)",

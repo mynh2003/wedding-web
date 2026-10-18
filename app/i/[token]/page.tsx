@@ -1,9 +1,9 @@
 import { createClient } from "@/lib/supabase/server";
+import { WeddingPage } from "@/components/wedding-page";
 import { hashInvitationToken, isInvitationToken } from "@/lib/invitations/token";
 import { notFound } from "next/navigation";
 import { unstable_noStore as noStore } from "next/cache";
 import type { Metadata } from "next";
-import Link from "next/link";
 
 export const dynamic = "force-dynamic";
 export const revalidate = 0;
@@ -15,18 +15,8 @@ export default async function PersonalInvitation({ params }: { params: Promise<{
   const { token } = await params;
   if (!isInvitationToken(token)) notFound();
   const supabase = await createClient();
-  const { data, error } = await supabase.rpc("resolve_invitation_token", { input_token_hash: hashInvitationToken(token) }).maybeSingle() as { data: { guest_name: string } | null; error: unknown };
+  const { data, error } = await supabase.rpc("resolve_invitation_token", { input_token_hash: hashInvitationToken(token) }).maybeSingle() as { data: { guest_name: string; wedding_slug: string; guest_group: "groom" | "bride" } | null; error: unknown };
   if (error || !data) notFound();
-  return (
-    <main className="grid min-h-screen place-items-center bg-cream px-6 text-center">
-      <section className="w-full max-w-2xl rounded-3xl border border-wine/10 bg-white/60 px-7 py-16 shadow-soft md:px-16">
-        <p className="text-xs uppercase tracking-[.35em] text-gold">Thiệp mời riêng</p>
-        <p className="mt-8 font-display text-3xl italic text-wine">Trân trọng kính mời</p>
-        <h1 className="mt-3 font-display text-5xl text-wine md:text-7xl">{data.guest_name}</h1>
-        <p className="mx-auto mt-8 max-w-md text-sm leading-7 text-ink/65">đến chung vui trong ngày hạnh phúc của Bình Minh và Ninh Thị Huệ.</p>
-        <p className="mt-8 text-xs uppercase tracking-[.25em] text-wine/60">Chủ Nhật · 22 tháng 11 năm 2026 · 09:30</p>
-        <Link href="/" className="mt-10 inline-flex rounded-full bg-wine px-6 py-3 text-sm font-semibold text-cream">Mở thiệp</Link>
-      </section>
-    </main>
-  );
+  if (data.guest_group !== "groom" && data.guest_group !== "bride") notFound();
+  return <WeddingPage guestName={data.guest_name} variant={data.guest_group} weddingSlug={data.wedding_slug} />;
 }

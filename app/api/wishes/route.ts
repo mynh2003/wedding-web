@@ -9,8 +9,11 @@ const slug = process.env.NEXT_PUBLIC_WEDDING_SLUG ?? "binh-minh-ninh-hue";
 
 export async function GET() {
   const supabase = await createClient();
-  const { data, error } = await supabase.from("public_wishes").select("id, author_name, message, created_at").eq("wedding_slug", slug).order("created_at", { ascending: false }).limit(50);
-  if (error) return NextResponse.json({ error: "Không thể tải lời chúc." }, { status: 500, headers: { "Cache-Control": "no-store" } });
+  const { data, error } = await supabase.from("public_wishes").select("id, author_name, message, created_at, side").eq("wedding_slug", slug).order("created_at", { ascending: false }).limit(50);
+  if (error) {
+    console.error("[api/wishes] Failed to load public wishes", { code: error.code, message: error.message, details: error.details, hint: error.hint });
+    return NextResponse.json({ error: "Không thể tải lời chúc." }, { status: 500, headers: { "Cache-Control": "no-store" } });
+  }
   return NextResponse.json({ data }, { headers: { "Cache-Control": "no-store" } });
 }
 
@@ -22,7 +25,7 @@ export async function POST(request: NextRequest) {
   const forwarded = request.headers.get("x-forwarded-for")?.split(",")[0]?.trim() ?? "unknown";
   const fingerprint = createHash("sha256").update(`${process.env.WISH_RATE_LIMIT_SECRET ?? process.env.NEXT_PUBLIC_SUPABASE_URL}:${forwarded}`).digest("hex");
   const supabase = await createClient();
-  const { error } = await supabase.rpc("submit_public_wish", { input_slug: slug, input_author: parsed.value.authorName, input_message: parsed.value.message, input_fingerprint: fingerprint });
+  const { error } = await supabase.rpc("submit_public_wish", { input_slug: slug, input_author: parsed.value.authorName, input_message: parsed.value.message, input_fingerprint: fingerprint, input_side: parsed.value.side ?? null });
   if (error) {
     const limited = error.message.includes("rate limited");
     return NextResponse.json({ error: limited ? "Bạn đã gửi quá nhiều lời chúc. Vui lòng thử lại sau." : "Không thể gửi lời chúc lúc này." }, { status: limited ? 429 : 400, headers: { "Retry-After": limited ? "600" : "0", "Cache-Control": "no-store" } });

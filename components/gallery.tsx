@@ -1,38 +1,172 @@
 "use client";
 
 import Image from "next/image";
-import { AnimatePresence, motion } from "framer-motion";
-import { useState } from "react";
+import { motion, useMotionValue, useReducedMotion } from "framer-motion";
+import { useEffect, useRef, useState } from "react";
 
-const photos = [
-  { src: "/placeholders/ring-portrait.svg", alt: "Placeholder nét vẽ nhẫn cưới", className: "md:row-span-2" },
-  { src: "/placeholders/ring-detail.svg", alt: "Placeholder chi tiết đôi nhẫn", className: "" },
-  { src: "/placeholders/ring-wide.svg", alt: "Placeholder album nét vẽ nhẫn", className: "" },
-  { src: "/placeholders/ring-hero.svg", alt: "Placeholder không gian ngày cưới", className: "md:col-span-2" },
+const fallbackPhotos = [
+  { src: "/placeholders/ring-portrait.svg", alt: "Khoảnh khắc của đôi uyên ương" },
+  { src: "/placeholders/ring-detail.svg", alt: "Chi tiết nhẫn cưới" },
+  { src: "/placeholders/ring-wide.svg", alt: "Album ngày cưới" },
+  { src: "/placeholders/ring-hero.svg", alt: "Không gian ngày cưới" },
+  { src: "/placeholders/hero-gray.svg", alt: "Khoảnh khắc hạnh phúc trong ngày cưới" },
 ];
 
-export function Gallery() {
-  const [selected, setSelected] = useState<number | null>(null);
+export function Gallery({ coverImage, images = [] }: { coverImage?: string; images?: (string | undefined)[] }) {
+  const photos = fallbackPhotos.map((photo, index) => ({ ...photo, src: images[index] || photo.src }));
+  const [active, setActive] = useState(0);
+  const [viewerIndex, setViewerIndex] = useState<number | null>(null);
+  const [zoomed, setZoomed] = useState(false);
+  const dialogRef = useRef<HTMLDialogElement>(null);
+  const dragged = useRef(false);
+
+  useEffect(() => {
+    if (viewerIndex === null) return;
+    const dialog = dialogRef.current;
+    const scroller = stageRef.current?.closest<HTMLElement>(".mobile-landing");
+    const previousOverflow = scroller?.style.overflow;
+    dialog?.showModal();
+    if (scroller) scroller.style.overflow = "hidden";
+    return () => {
+      dialog?.close();
+      if (scroller) scroller.style.overflow = previousOverflow ?? "";
+    };
+  }, [viewerIndex === null]);
+
+  const changeViewerPhoto = (direction: number) => {
+    setViewerIndex((index) => index === null ? null : (index + direction + photos.length) % photos.length);
+    setZoomed(false);
+  };
+  const progressOffset = useMotionValue(113.1);
+  const reduceMotion = useReducedMotion();
+  const stageRef = useRef<HTMLDivElement>(null);
+  const swiperRef = useRef<HTMLDivElement>(null);
+  const activeRef = useRef(active);
+  activeRef.current = active;
+
+  useEffect(() => {
+    const swiper = swiperRef.current;
+    const stage = stageRef.current;
+    const scroller = stage?.closest<HTMLElement>(".mobile-landing");
+    if (!swiper || !stage || !scroller) return;
+
+    let frame = 0;
+    const updateFromScroll = () => {
+      if (frame) return;
+      frame = requestAnimationFrame(() => {
+        frame = 0;
+        const travel = Math.max(1, swiper.offsetHeight - stage.offsetHeight);
+        const distance = Math.max(0, Math.min(travel, scroller.getBoundingClientRect().top + scroller.clientTop - swiper.getBoundingClientRect().top));
+        const totalProgress = (distance / travel) * (photos.length - 1);
+        const nextActive = Math.min(photos.length - 1, Math.floor(totalProgress + 0.0001));
+        const nextProgress = nextActive === photos.length - 1 ? 1 : totalProgress - nextActive;
+        if (activeRef.current !== nextActive) {
+          activeRef.current = nextActive;
+          setActive(nextActive);
+        }
+        progressOffset.set(113.1 * (1 - nextProgress));
+      });
+    };
+
+    scroller.addEventListener("scroll", updateFromScroll, { passive: true });
+    window.addEventListener("resize", updateFromScroll);
+    updateFromScroll();
+    return () => {
+      cancelAnimationFrame(frame);
+      scroller.removeEventListener("scroll", updateFromScroll);
+      window.removeEventListener("resize", updateFromScroll);
+    };
+  }, [photos.length, progressOffset]);
+
+  const goToSlide = (requestedIndex: number) => {
+    const index = Math.max(0, Math.min(photos.length - 1, requestedIndex));
+    const swiper = swiperRef.current;
+    const stage = stageRef.current;
+    const scroller = stage?.closest<HTMLElement>(".mobile-landing");
+    if (!swiper || !stage || !scroller) return;
+    const travel = Math.max(0, swiper.offsetHeight - stage.offsetHeight);
+    const scrollTop = scroller.scrollTop + swiper.getBoundingClientRect().top - scroller.getBoundingClientRect().top - scroller.clientTop + (index / (photos.length - 1)) * travel;
+    scroller.scrollTo({ top: scrollTop, behavior: reduceMotion ? "instant" : "smooth" });
+  };
   return (
     <>
-      <div className="grid auto-rows-[180px] grid-cols-2 gap-3 md:auto-rows-[220px] md:grid-cols-3">
-        {photos.map((photo, index) => (
-          <button key={photo.src} onClick={() => setSelected(index)} className={`group relative overflow-hidden rounded-xl bg-wine/10 text-left ${photo.className}`} aria-label={`Mở ảnh: ${photo.alt}`}>
-            <Image src={photo.src} alt={photo.alt} fill sizes="(max-width: 768px) 50vw, 33vw" className="object-cover transition duration-500 ease-out group-hover:scale-105" loading="lazy" />
-            <span className="absolute inset-0 bg-wine/0 transition group-hover:bg-wine/15" />
-          </button>
-        ))}
+      <div className="album-art mx-auto w-full max-w-[430px]" aria-label="Album ảnh cưới">
+        <div className="album-art__intro">
+          <h2 className="album-art__heading"><span>ALBUM</span><span className="album-art__of">of</span><span className="sr-only">Love</span></h2>
+          <div className="album-art__collage">
+            <Image src={coverImage || photos[0].src} unoptimized={!!coverImage || !!images[0]} alt={photos[0].alt} fill sizes="(max-width: 430px) 90vw, 390px" className="object-cover" />
+          </div>
+        </div>
+        <div ref={swiperRef} className="album-swiper" aria-label="Trình chiếu ảnh cưới, 5 ảnh">
+          <div ref={stageRef} className="album-swiper__stage">
+            {photos.map((photo, index) => (
+              <motion.button
+                type="button"
+                aria-label="Mở ảnh trong gallery phóng to"
+                onPointerDown={() => { dragged.current = false; }}
+                onDragStart={() => { dragged.current = true; }}
+                onClick={() => { if (!dragged.current) { setViewerIndex(active); setZoomed(false); } }}
+                key={index}
+                tabIndex={active === index ? 0 : -1}
+                aria-hidden={active !== index}
+                style={{ pointerEvents: active === index ? "auto" : "none", zIndex: active === index ? 1 : 0 }}
+                className="album-swiper__slide"
+                drag="x"
+                dragDirectionLock
+                dragConstraints={{ left: 0, right: 0 }}
+                dragElastic={0.18}
+                dragMomentum={false}
+                onDragEnd={(_, info) => {
+                  if (info.offset.x < -40 || info.velocity.x < -300) goToSlide(activeRef.current + 1);
+                  else if (info.offset.x > 40 || info.velocity.x > 300) goToSlide(activeRef.current - 1);
+                }}
+                initial={false}
+                animate={{ opacity: active === index ? 1 : 0, scale: reduceMotion || active === index ? 1 : 1.035 }}
+                transition={{ duration: reduceMotion ? 0 : .55, ease: [.22, 1, .36, 1] }}
+              >
+                <Image src={photo.src} unoptimized={!!images[index]} alt={photo.alt} loading="eager" fill sizes="(max-width: 430px) 100vw, 430px" draggable={false} className="pointer-events-none object-cover" />
+              </motion.button>
+            ))}
+            <div className="album-swiper__dots" aria-label="Chọn ảnh">
+              {photos.map((photo, index) => (
+                <button key={photo.src} type="button" onClick={() => goToSlide(index)} aria-label={`Chuyển tới ảnh ${index + 1}`} aria-current={active === index ? "true" : undefined} className={active === index ? "is-active" : ""}>
+                  {String(index + 1).padStart(2, "0")}
+                {active === index && (
+                    <svg className="album-swiper__progress" viewBox="0 0 40 40" aria-hidden="true">
+                      <circle className="album-swiper__progress-track" cx="20" cy="20" r="18" />
+                    <motion.circle className="album-swiper__progress-value" cx="20" cy="20" r="18" style={{ strokeDashoffset: progressOffset }} />
+                    </svg>
+                  )}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
       </div>
-      <AnimatePresence>
-        {selected !== null && (
-          <motion.div className="fixed inset-0 z-50 grid place-items-center bg-ink/90 p-6 backdrop-blur-sm" initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0 }} onClick={() => setSelected(null)}>
-            <motion.div className="relative h-[min(80vh,700px)] w-full max-w-3xl" initial={{ scale: .95 }} animate={{ scale: 1 }} onClick={(event) => event.stopPropagation()}>
-              <Image src={photos[selected].src} alt={photos[selected].alt} fill sizes="90vw" className="object-contain" priority />
-              <button onClick={() => setSelected(null)} className="absolute right-0 top-0 rounded-full bg-cream px-3 py-1 text-xl text-ink" aria-label="Đóng ảnh">×</button>
-            </motion.div>
-          </motion.div>
-        )}
-      </AnimatePresence>
+      <dialog ref={dialogRef} className="album-viewer" aria-label="Gallery ảnh cưới phóng to"
+        onCancel={() => setViewerIndex(null)}
+        onClick={(event) => { if (event.target === event.currentTarget) setViewerIndex(null); }}
+        onKeyDown={(event) => {
+          if (event.key === "ArrowRight") { event.preventDefault(); changeViewerPhoto(1); }
+          if (event.key === "ArrowLeft") { event.preventDefault(); changeViewerPhoto(-1); }
+        }}>
+        {viewerIndex !== null && <>
+          <div className="album-viewer__toolbar">
+            <span aria-live="polite">{viewerIndex + 1} / {photos.length}</span>
+            <button type="button" aria-pressed={zoomed} onClick={() => setZoomed(!zoomed)}>{zoomed ? "Thu nhỏ" : "Phóng to"}</button>
+            <button type="button" onClick={() => setViewerIndex(null)} aria-label="Đóng gallery">✕</button>
+          </div>
+          <div className="album-viewer__image" data-zoomed={zoomed}>
+            <div className="album-viewer__canvas">
+              <Image src={photos[viewerIndex].src} unoptimized={!!images[viewerIndex]} alt={photos[viewerIndex].alt} fill sizes="100vw" className="object-contain" draggable={false} />
+            </div>
+          </div>
+          <div className="album-viewer__navigation">
+            <button type="button" onClick={() => changeViewerPhoto(-1)} aria-label="Ảnh trước">←</button>
+            <button type="button" onClick={() => changeViewerPhoto(1)} aria-label="Ảnh tiếp theo">→</button>
+          </div>
+        </>}
+      </dialog>
     </>
   );
 }

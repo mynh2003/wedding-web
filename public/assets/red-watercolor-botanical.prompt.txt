@@ -1,0 +1,5 @@
+Generated using the built-in image_gen tool with transparent_background=true.
+The website uses the trimmed 640px-tall WebP version with alpha transparency.
+
+Final prompt:
+Use case: illustration-story. Create a production website decorative botanical asset: one airy branch with two delicate red cosmos blossoms and a small bud, thin curved olive stems and sparse leaves. Traditional hand painted watercolor on textured cold pressed paper, translucent crimson, wine red and soft rose petal washes, fine pigment granulation, irregular brush edges, delicate botanical drawing similar to the attached reference flower. Flowers open and light, not dense roses. Vertical composition, all petals and stems fully within the image with generous transparent margins. Genuinely transparent background with no paper rectangle, no lettering, no shadow, no border. For elegant cream paper Vietnamese wedding invitation. Output one isolated botanical sprig.

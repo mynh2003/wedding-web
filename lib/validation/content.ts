@@ -1,6 +1,6 @@
 export type ContentInput = { sectionKey: string; content: Record<string, unknown>; isPublished: boolean };
 
-const allowedKeys = new Set(["hero", "invitation", "venue", "story", "timeline", "dress_code"]);
+const allowedKeys = new Set(["hero", "invitation", "families", "venue", "story", "timeline", "dress_code", "gifts"]);
 function safeText(value: unknown, max: number) { return typeof value === "string" && value.length <= max ? value : null; }
 
 export function parseContentInput(value: unknown): { value: ContentInput } | { error: string } {
@@ -17,6 +17,10 @@ export function parseContentInput(value: unknown): { value: ContentInput } | { e
     else if (Array.isArray(raw) && raw.length <= 30 && raw.every((item) => typeof item === "string" && item.length <= 500)) content[key] = raw;
     else return { error: "Nội dung chỉ hỗ trợ text an toàn." };
   }
+  if (sectionKey === "families") {
+    const error = calendarRangeError(content.calendar_start_date, content.calendar_end_date);
+    if (error) return { error };
+  }
   return { value: { sectionKey, content, isPublished: body.isPublished === true } };
 }
 
@@ -31,3 +35,17 @@ export function hasValidSignature(bytes: Uint8Array, mime: string) {
   if (mime === "audio/mpeg") return (bytes[0] === 0xff && (bytes[1] & 0xe0) === 0xe0) || new TextDecoder().decode(bytes.slice(0, 3)) === "ID3";
   return false;
 }
+
+export function isCalendarDate(value: unknown): value is string {
+  if (typeof value !== "string" || !/^\d{4}-\d{2}-\d{2}$/.test(value)) return false;
+  const date = new Date(`${value}T00:00:00Z`);
+  return Number.isFinite(date.getTime()) && date.toISOString().slice(0, 10) === value;
+}
+
+export function calendarRangeError(start: unknown, end: unknown): string | null {
+  if ((start !== undefined && start !== "" && !isCalendarDate(start)) || (end !== undefined && end !== "" && !isCalendarDate(end))) return "Ngày đánh dấu trên lịch không hợp lệ.";
+  if (Boolean(start) !== Boolean(end)) return "Vui lòng chọn cả ngày bắt đầu và ngày kết thúc.";
+  if (typeof start === "string" && typeof end === "string" && start > end) return "Ngày kết thúc phải từ ngày bắt đầu trở đi.";
+  return null;
+}
+

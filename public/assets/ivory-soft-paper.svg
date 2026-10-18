@@ -1,0 +1,24 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="512" height="512" viewBox="0 0 512 512">
+  <filter id="fibers" x="0" y="0" width="100%" height="100%">
+    <feTurbulence type="fractalNoise" baseFrequency=".58" numOctaves="3" seed="19" stitchTiles="stitch"/>
+    <feColorMatrix type="saturate" values="0"/>
+    <feComponentTransfer>
+      <feFuncR type="linear" slope="0" intercept=".35"/>
+      <feFuncG type="linear" slope="0" intercept=".35"/>
+      <feFuncB type="linear" slope="0" intercept=".35"/>
+      <feFuncA type="linear" slope=".055"/>
+    </feComponentTransfer>
+  </filter>
+  <filter id="cloud" x="0" y="0" width="100%" height="100%">
+    <feTurbulence type="fractalNoise" baseFrequency=".018" numOctaves="3" seed="7" stitchTiles="stitch"/>
+    <feColorMatrix type="saturate" values="0"/>
+    <feComponentTransfer>
+      <feFuncR type="linear" slope="0" intercept=".45"/>
+      <feFuncG type="linear" slope="0" intercept=".45"/>
+      <feFuncB type="linear" slope="0" intercept=".45"/>
+      <feFuncA type="linear" slope=".018"/>
+    </feComponentTransfer>
+  </filter>
+  <path filter="url(#cloud)" d="M0 0h512v512H0z"/>
+  <path filter="url(#fibers)" d="M0 0h512v512H0z"/>
+</svg>

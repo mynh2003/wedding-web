@@ -1,0 +1,21 @@
+Mode: built-in image_gen, transparent_background=true. Botanical photo references supplied by the user. Final images trimmed, resized to 720px height and converted to WebP with alpha.
+
+Shared final prompt:
+Create a visibly HAND PAINTED WATERCOLOR illustration for a wedding invitation, NOT a photograph. Reference image only specifies plant shapes. Loose expressive wet-on-wet washes, soft bleeding edges, translucent crimson pigment blooms, simplified petal planes, visible white negative-space brush gaps, delicate pencil hints, matte colors and loose unfinished brushwork. NO photorealism, NO glossy highlights, NO photographic texture, NO crisp 3D petals. Restrained burgundy and faded dusty wine red with very sparse muted olive stems. Transparent background; no paper rectangle, vase, hands, text or shadow. One isolated airy botanical branch, fully contained in frame. Stems curve from lower left toward blossoms at upper right, for a branch growing in from page edge.
+
+Each final prompt appends one of these descriptions:
+
+floral-anthurium-pair.webp (quote section):
+Two heart-shaped burgundy anthurium flowers with ivory yellow spadices, on two long sparse curved stems. Very minimal and open.
+
+floral-rose-anthurium.webp (invitation section):
+One anthurium and two small burgundy garden roses with a short drooping amaranth tassel. Small airy asymmetrical botanical spray.
+
+floral-calla-orchid.webp (love story section):
+One ivory and two burgundy calla lilies with a single ivory orchid and a fine branch of tiny wine-red buds. Sparse graceful curving stems.
+
+floral-amaranth-cascade.webp (album section):
+Only an airy spray of 5 thin burgundy amaranth tassels, arching branching stems enter from upper right, tassels hang down delicately in varied lengths.
+
+floral-rose-bud-spray.webp (wishes section):
+One loosely painted wine-red garden rose and three tiny buds, on a single slender curved branch with a few feathery olive leaves. Minimal diagonal sprig, no anthurium, no dense bouquet.

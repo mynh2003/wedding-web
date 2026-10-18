@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 500 470" fill="#873e32" role="img" aria-labelledby="title">
+  <title id="title">Bình Minh - Ninh Huệ — MH</title>
+  <!-- M and H share a single central upright. Paths avoid font-dependent offsets. -->
+  <path d="M250 40h78v2c-36 0-43 15-43 45v275c0 30 8 42 43 42v2H207v-2c35 0 43-12 43-42V40Z"/>
+  <path d="M29 40h65l91 174L257 40h9L171 251 78 73v179c0 42 7 60 45 60v2H18v-2c42 0 52-18 52-60V90c0-32-9-48-41-48v-2Z"/>
+  <path d="M345 135h121v2c-35 0-43 13-43 43v221c0 30 8 43 43 43v2H345v-2c35 0 43-13 43-43V180c0-30-8-43-43-43v-2ZM275 280h124v6H275Z"/>
+  <path d="M65 307c46 55 102-10 171-52 58-36 109-60 164-40 44 16 61 55 42 80-4 5-9 9-15 12 27-36 9-70-30-84-55-19-103 7-158 42-70 44-126 107-174 42Z"/>
+</svg>

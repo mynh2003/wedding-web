@@ -1,38 +1,97 @@
 "use client";
 
+import { publicApiFetch } from "@/lib/http/public-api";
+
 import { useEffect, useRef, useState } from "react";
 
-const tracks = [
-  { title: "A thousand years", src: "/music/a-thousand-years.mp3" },
-  { title: "Perfect", src: "/music/perfect.mp3" },
-  { title: "Can’t help falling in love", src: "/music/cant-help-falling-in-love.mp3" },
-];
+type Track = { title: string; src: string };
+
+// Share the request across mounts (including Strict Mode) until a full reload.
+let trackRequest: Promise<Track> | undefined;
+function loadTrack() {
+  if (trackRequest) return trackRequest;
+  let previous = "";
+  try { previous = sessionStorage.getItem("wedding:last-music") ?? ""; } catch { /* Storage may be blocked. */ }
+  return trackRequest = publicApiFetch(`/api/music?previous=${encodeURIComponent(previous)}`, { cache: "no-store" })
+    .then(async (response) => {
+      if (!response.ok) throw new Error("Không thể tải nhạc");
+      const { track } = await response.json();
+      if (typeof track?.title !== "string" || typeof track?.src !== "string") {
+        throw new Error("Bài hát không hợp lệ");
+      }
+      try { sessionStorage.setItem("wedding:last-music", track.src); } catch { /* Playback still works without storage. */ }
+      return track as Track;
+    });
+}
 
 export function MusicPlayer() {
+  const player = useRef<HTMLDivElement>(null);
   const audio = useRef<HTMLAudioElement>(null);
   const [playing, setPlaying] = useState(false);
-  const [track, setTrack] = useState(0);
+  const [track, setTrack] = useState<Track | null>(null);
+  const [failed, setFailed] = useState(false);
+  const wantsPlayback = useRef(false);
+  const [showTrackName, setShowTrackName] = useState(false);
 
   useEffect(() => {
-    const start = () => { void audio.current?.play().then(() => setPlaying(true)).catch(() => setPlaying(false)); };
-    window.addEventListener("wedding:opened", start);
-    return () => window.removeEventListener("wedding:opened", start);
+    const hideOutside = (event: Event) => {
+      if (event.target instanceof Node && !player.current?.contains(event.target)) {
+        setShowTrackName(false);
+      }
+    };
+    document.addEventListener("pointerdown", hideOutside);
+    document.addEventListener("focusin", hideOutside);
+    return () => {
+      document.removeEventListener("pointerdown", hideOutside);
+      document.removeEventListener("focusin", hideOutside);
+    };
   }, []);
 
-  function nextTrack() {
-    setTrack((current) => (current + 1) % tracks.length);
-  }
+  useEffect(() => {
+    let active = true;
+    const play = () => { void audio.current?.play().catch(() => { if (active) setPlaying(false); }); };
+    const start = () => {
+      wantsPlayback.current = true;
+      if (audio.current?.getAttribute("src")) play();
+    };
+    window.addEventListener("wedding:opened", start);
+    void loadTrack().then((selected) => {
+      if (!active || !audio.current) return;
+      audio.current.src = selected.src;
+      setTrack(selected);
+      if (wantsPlayback.current) play();
+    }).catch(() => { if (active) setFailed(true); });
+    return () => { active = false; window.removeEventListener("wedding:opened", start); };
+  }, []);
 
   function toggle() {
-    if (!audio.current) return;
-    if (playing) { audio.current.pause(); setPlaying(false); } else { void audio.current.play().then(() => setPlaying(true)).catch(() => setPlaying(false)); }
+    if (!audio.current || !track || failed) return;
+    wantsPlayback.current = !playing;
+    if (playing) {
+      audio.current.pause();
+      setShowTrackName(true);
+    } else {
+      setShowTrackName(false);
+      void audio.current.play().catch(() => setPlaying(false));
+    }
   }
 
   return (
-    <div className="mobile-music-player fixed bottom-5 left-5 z-30 flex items-center gap-3 rounded-full border border-wine/10 bg-cream/90 px-3 py-2 shadow-soft backdrop-blur-md">
-      <audio ref={audio} src={tracks[track].src} onEnded={nextTrack} preload="none" aria-label={tracks[track].title} />
-      <button onClick={toggle} className={`grid h-10 w-10 place-items-center rounded-full bg-wine text-cream ${playing ? "animate-[spin_4s_linear_infinite]" : ""}`} aria-label={playing ? "Tạm dừng nhạc" : "Phát nhạc"}>{playing ? "Ⅱ" : "♪"}</button>
-      <span className="hidden max-w-32 truncate text-xs text-ink/70 sm:block">{tracks[track].title}</span>
+    <div ref={player} data-playing={playing} className="mobile-music-player fixed z-30 flex items-center gap-0 rounded-full border border-wine/15 bg-cream/95 p-1 shadow-[0_3px_12px_rgba(60,20,30,0.22),0_1px_3px_rgba(60,20,30,0.12)] backdrop-blur-md">
+      {playing && <div className="music-floating-notes" aria-hidden="true">
+        <span>♪</span><span>♫</span><span>♩</span><span>♬</span>
+      </div>}
+      <audio ref={audio} loop onPlaying={() => { setPlaying(true); setShowTrackName(false); }} onWaiting={() => setPlaying(false)} onPause={() => setPlaying(false)} onError={() => { setPlaying(false); setFailed(true); }} preload="none" aria-label={track?.title ?? "Nhạc nền"} />
+      <button disabled={!track || failed} onClick={toggle} className="music-disc-button relative grid h-8 w-8 shrink-0 place-items-center rounded-full bg-wine text-cream disabled:opacity-50" data-playing={playing} aria-pressed={playing} aria-label={failed ? "Không thể tải nhạc" : !track ? "Đang tải nhạc" : playing ? "Tạm dừng nhạc" : "Phát nhạc"}>
+        <svg aria-hidden="true" viewBox="0 0 32 32" className="music-disc h-5 w-5" fill="none">
+          <path d="M13 21V10l11-3v11M13 13l11-3" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
+          <ellipse cx="10" cy="22" rx="4" ry="3" fill="currentColor" />
+          <ellipse cx="21" cy="19" rx="4" ry="3" fill="currentColor" />
+        </svg>
+      </button>
+      <div className={`grid transition-[grid-template-columns,margin,padding,opacity] duration-300 ease-in-out ${showTrackName ? "ml-1.5 grid-cols-[1fr] pr-2 opacity-100" : "grid-cols-[0fr] pr-0 opacity-0"}`}>
+        <span role="status" className="block min-w-0 max-w-[min(280px,calc(100vw-80px))] overflow-hidden truncate whitespace-nowrap text-[11px] text-ink/70" title={track?.title}>{failed ? "Không thể tải nhạc" : track?.title ?? "Đang tải nhạc…"}</span>
+      </div>
     </div>
   );
 }

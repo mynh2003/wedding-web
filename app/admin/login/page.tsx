@@ -16,9 +16,9 @@ async function LoginForm({ searchParams }: { searchParams: Promise<{ error?: str
         {params.error === "invalid" && <p role="alert" className="mt-5 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-800">Email hoặc mật khẩu không đúng, hoặc email chưa được xác minh.</p>}
         {params.error === "unconfirmed" && <p role="alert" className="mt-5 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-800">Email Supabase chưa được xác minh.</p>}
         {params.error === "not-admin" && <p role="alert" className="mt-5 rounded-lg bg-red-50 px-4 py-3 text-sm text-red-800">Tài khoản đúng nhưng chưa được cấp quyền admin trong bảng <code>admin_users</code>.</p>}
-        <label className="mt-7 block text-xs font-semibold uppercase tracking-[.2em] text-wine/60">Email</label>
-        <input name="email" type="email" autoComplete="email" required className="mt-2 w-full rounded-lg border border-wine/10 bg-cream px-4 py-3 text-sm outline-none focus:border-gold" />
-        <label className="mt-5 block text-xs font-semibold uppercase tracking-[.2em] text-wine/60">Mật khẩu</label>
+        <label htmlFor="admin-email" className="mt-7 block text-xs font-semibold uppercase tracking-[.2em] text-wine/60">Email</label>
+        <input id="admin-email" name="email" type="email" autoComplete="email" required className="mt-2 w-full rounded-lg border border-wine/10 bg-cream px-4 py-3 text-sm outline-none focus:border-gold" />
+        <label htmlFor="admin-password" className="mt-5 block text-xs font-semibold uppercase tracking-[.2em] text-wine/60">Mật khẩu</label>
         <PasswordField />
         <button className="mt-7 w-full rounded-full bg-wine px-6 py-3 text-sm font-semibold text-cream transition hover:bg-ink">Đăng nhập</button>
       </form>

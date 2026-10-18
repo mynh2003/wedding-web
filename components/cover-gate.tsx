@@ -1,40 +1,123 @@
 "use client";
 
-import { AnimatePresence, motion } from "framer-motion";
+import { AnimatePresence, motion, useReducedMotion } from "framer-motion";
+import Image from "next/image";
 import { useEffect, useState } from "react";
 
+const EXIT_DURATION = 1.15;
+const BUTTON_FADE_DURATION = 0.3;
+
 export function CoverGate() {
-  const [open, setOpen] = useState(false);
+  const [coverRemoved, setCoverRemoved] = useState(false);
+  const [heroReady, setHeroReady] = useState(false);
+  const [imageReady, setImageReady] = useState(false);
+  const [sealFaded, setSealFaded] = useState(false);
+  const [phase, setPhase] = useState<"idle" | "fading" | "opening">("idle");
+  const opening = phase === "opening";
+  const reduceMotion = useReducedMotion();
 
   useEffect(() => {
-    document.body.style.overflow = open ? "" : "hidden";
-    return () => { document.body.style.overflow = ""; };
-  }, [open]);
+    const page = document.querySelector<HTMLElement>(".mobile-landing");
+    const previousBodyOverflow = document.body.style.overflow;
+    const previousPageOverflowY = page?.style.overflowY ?? "";
+
+    // Keep the document stationary and scroll the invitation frame itself.
+    document.body.style.overflow = "hidden";
+    if (page) page.style.overflowY = heroReady ? "scroll" : "hidden";
+
+    return () => {
+      document.body.style.overflow = previousBodyOverflow;
+      if (page) page.style.overflowY = previousPageOverflowY;
+    };
+  }, [heroReady]);
+
+  useEffect(() => {
+    const markImageReady = () => setImageReady(true);
+    window.addEventListener("wedding:hero-image-ready", markImageReady);
+    if (document.querySelector('[data-hero-image-ready="true"]')) markImageReady();
+    return () => window.removeEventListener("wedding:hero-image-ready", markImageReady);
+  }, []);
+
+  useEffect(() => {
+    if (phase !== "fading" || !sealFaded || !imageReady) return;
+    setPhase("opening");
+    window.dispatchEvent(new Event("wedding:opened"));
+  }, [phase, sealFaded, imageReady]);
+
+  useEffect(() => {
+    if (!opening) return;
+    const timeout = window.setTimeout(() => setCoverRemoved(true), reduceMotion ? 30 : EXIT_DURATION * 1000);
+    return () => window.clearTimeout(timeout);
+  }, [opening, reduceMotion]);
+
+  useEffect(() => {
+    if (phase !== "fading") return;
+    const timeout = window.setTimeout(() => setSealFaded(true), reduceMotion ? 0 : BUTTON_FADE_DURATION * 1000);
+    return () => window.clearTimeout(timeout);
+  }, [phase, reduceMotion]);
+
+  useEffect(() => {
+    const unlockScroll = () => setHeroReady(true);
+    window.addEventListener("wedding:hero-ready", unlockScroll);
+    return () => window.removeEventListener("wedding:hero-ready", unlockScroll);
+  }, []);
 
   function openInvitation() {
-    setOpen(true);
-    window.dispatchEvent(new Event("wedding:opened"));
+    if (phase !== "idle") return;
+    setPhase("fading");
   }
 
   return (
-    <AnimatePresence>
-      {!open && (
+    <AnimatePresence onExitComplete={() => window.dispatchEvent(new Event("wedding:cover-cleared"))}>
+      {!coverRemoved && (
         <motion.div
-          className="mobile-cover fixed inset-0 z-50 grid place-items-center overflow-hidden bg-wine px-6 text-center text-cream"
+          className="mobile-cover fixed inset-0 z-50 flex items-center justify-center overflow-hidden bg-transparent text-center text-wine"
           initial={{ opacity: 1 }}
-          exit={{ opacity: 0, transition: { duration: 0.7 } }}
+          exit={{ opacity: 0, transition: { duration: reduceMotion ? 0 : .3 } }}
         >
-          <div className="absolute inset-0 opacity-20 [background-image:radial-gradient(circle_at_25%_20%,#d4af37,transparent_28%),radial-gradient(circle_at_80%_90%,#000,transparent_42%)]" />
-          <motion.div className="relative max-w-md" initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} transition={{ duration: .8 }}>
-            <p className="font-sans text-xs uppercase tracking-[.4em] text-gold">Một lời mời trân trọng</p>
-            <p className="mt-5 font-script text-5xl text-gold">Wedding day</p>
-            <div className="mx-auto my-7 grid h-28 w-28 place-items-center rounded-full border border-gold/60 font-script text-5xl text-gold">M<span className="font-serif text-2xl">&amp;</span>H</div>
-            <p className="font-serif text-3xl italic">Trân trọng kính mời bạn</p>
-            <p className="mt-3 font-sans text-sm leading-7 text-cream/65">đến chung vui trong ngày hạnh phúc của Bình Minh và Ninh Thị Huệ</p>
-            <button onClick={openInvitation} className="group mt-10 inline-flex items-center gap-3 rounded-full border border-gold/70 px-7 py-3.5 text-sm font-semibold text-cream transition hover:bg-gold hover:text-ink focus:outline-none focus:ring-2 focus:ring-gold focus:ring-offset-2 focus:ring-offset-wine">
-              Mở thiệp <span className="transition-transform group-hover:translate-x-1">→</span>
-            </button>
+          <motion.div
+            className="envelope-panel envelope-panel-top pointer-events-none absolute left-0 top-0 z-20 w-full"
+            initial={false}
+            animate={opening ? { y: "-100%" } : { y: 0 }}
+            transition={{ duration: reduceMotion ? 0 : EXIT_DURATION, ease: [0.65, 0, 0.35, 1] }}
+          >
+            <div className="envelope-top-shadow absolute inset-0" aria-hidden="true">
+              <div className="envelope-fabric envelope-top-surface absolute inset-0" />
+            </div>
+            <div className="envelope-save-date absolute z-30 text-[#f1eadb]">
+              <h1 className="envelope-save-date-title" aria-label="Save the Date">
+                <span className="envelope-save-word">SAVE</span>
+                <span className="envelope-date-line"><span className="envelope-the-word">the</span><span className="envelope-date-word">DATE</span></span>
+              </h1>
+            </div>
+            <div className="pointer-events-auto absolute -bottom-9 left-1/2 z-40 -translate-x-1/2">
+              <div className="envelope-seal-entrance">
+              <motion.button
+                onClick={openInvitation}
+                disabled={phase !== "idle"}
+                initial={false}
+                animate={phase === "idle" ? { opacity: 1, scale: 1 } : { opacity: 0, scale: .88 }}
+                transition={{ duration: reduceMotion ? 0 : BUTTON_FADE_DURATION, ease: "easeOut" }}
+                aria-label="Mở thiệp"
+                title="Mở thiệp"
+                className="type-button block h-[7.5rem] w-[7.5rem] rounded-full disabled:cursor-wait"
+              >
+                <Image src="/wax-seal-monogram-mh.png" alt="" width={1254} height={1254} priority className={`${phase === "idle" ? "envelope-seal-pulse " : ""}h-full w-full object-contain drop-shadow-[0_4px_6px_rgba(22,9,7,.4)]`} />
+              </motion.button>
+              </div>
+            </div>
           </motion.div>
+
+          <motion.div
+            className="envelope-panel envelope-panel-bottom absolute bottom-0 left-0 z-10 w-full"
+            initial={false}
+            animate={opening ? { y: "100%" } : { y: 0 }}
+            transition={{ duration: reduceMotion ? 0 : EXIT_DURATION, ease: [0.65, 0, 0.35, 1] }}
+            aria-hidden="true"
+          >
+            <div className="envelope-fabric absolute inset-0" />
+          </motion.div>
+
         </motion.div>
       )}
     </AnimatePresence>
