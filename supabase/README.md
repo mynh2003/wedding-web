@@ -79,6 +79,8 @@ The migration deliberately does not create public insert policies for `wishes`; 
 
 ## Phase 5 public wishes
 
+If the server log reports `column public_wishes.side does not exist` (code `42703`), apply `migrations/202610180004_wish_sides.sql` after the earlier migrations. This adds side labels and the side-aware submission function. Until it is applied, GET `/api/wishes` falls back to approved wishes without side labels; sending side-aware wishes still requires the migration. Do not rerun older migrations over newer ones.
+
 Run `migrations/202610170001_phase5_wishes.sql` after Phase 3 and Phase 4. This creates the public approved-wishes projection, its read policy, the submission rate limiter, and the validated `submit_public_wish` function used by `/api/wishes`. If `GET /api/wishes` returns 500, check the Next.js server log for `[api/wishes]` and confirm this migration was applied to the Supabase project configured in `.env`.
 
 ## Phase 4 token links

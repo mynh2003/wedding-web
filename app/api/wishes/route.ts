@@ -10,7 +10,13 @@ const slug = process.env.NEXT_PUBLIC_WEDDING_SLUG ?? "binh-minh-ninh-hue";
 
 export async function GET() {
   const supabase = await createClient();
-  const { data, error } = await supabase.from("public_wishes").select("id, author_name, message, created_at, side").eq("wedding_slug", slug).order("created_at", { ascending: false }).limit(50);
+  let { data, error } = await supabase.from("public_wishes").select("id, author_name, message, created_at, side").eq("wedding_slug", slug).order("created_at", { ascending: false }).limit(50);
+  // Deployments predating the wish-sides migration can still read approved wishes.
+  if (error?.code === "42703" && /column public_wishes\.side does not exist/.test(error.message)) {
+    const legacy = await supabase.from("public_wishes").select("id, author_name, message, created_at").eq("wedding_slug", slug).order("created_at", { ascending: false }).limit(50);
+    data = legacy.data?.map((wish) => ({ ...wish, side: null })) ?? null;
+    error = legacy.error;
+  }
   if (error) {
     console.error("[api/wishes] Failed to load public wishes", { code: error.code, message: error.message, details: error.details, hint: error.hint });
     return NextResponse.json({ error: "Không thể tải lời chúc." }, { status: 500, headers: { "Cache-Control": "no-store" } });
