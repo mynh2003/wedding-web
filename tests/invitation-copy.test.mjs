@@ -11,7 +11,7 @@ const require = createRequire(import.meta.url);
 function load(file, dependencies = {}) {
   const source = ts.transpileModule(fs.readFileSync(file, "utf8"), { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2020, jsx: ts.JsxEmit.ReactJSX } }).outputText;
   const exports = {};
-  vm.runInNewContext(source, { exports, process, console, require: (name) => dependencies[name] ?? require(name) });
+  vm.runInNewContext(source, { exports, process, console, require: (name) => dependencies[name] ?? (name === "@/lib/dress-code" ? load("lib/dress-code.ts") : require(name)) });
   return exports;
 }
 const copy = load("lib/invitation-copy.ts");
@@ -54,6 +54,7 @@ test("admin saves copy in the current wedding and all invitation variants receiv
   assert.equal(saved.is_published, true);
 
   const deps = {
+    "@/components/inertial-scroll": { InertialScroll: () => null },
     "@/lib/invitation-copy": copy,
     "@/lib/section-images": { sectionImageGroups: [] },
     "@/lib/wedding-public": { getPublicWedding: async () => ({ wedding: { groom_name: "Minh", bride_name: "Huệ", wedding_date: "2026-10-18T18:00:00+07:00" }, content: { copy: saved.content }, imageUrls: {} }) },
@@ -75,12 +76,25 @@ test("admin saves copy in the current wedding and all invitation variants receiv
 });
 
 test("story and RSVP components render configured copy and keep text escaped", () => {
-  const shared = { "@/lib/invitation-copy": copy, "next/image": { default: () => null, __esModule: true } };
+  const shared = { "@/components/photo-viewer": { PhotoViewer: () => null }, "@/lib/invitation-copy": copy, "next/image": { default: () => null, __esModule: true } };
   const { LoveStory } = load("components/love-story.tsx", shared);
   const html = renderToStaticMarkup(React.createElement(LoveStory, { pages: custom.story_pages }));
   for (const page of custom.story_pages) assert.ok(html.includes(page));
   assert.ok(!html.includes(copy.defaultInvitationCopy.story_pages[0]));
-  const { WishesSection } = load("components/wishes-section.tsx", { ...shared, "@/lib/supabase/client": { createClient: () => ({}) }, "@/lib/http/public-api": {} });
+  const { WishesSection } = load("components/wishes-section.tsx", { ...shared, "@/lib/wish-ticker": load("lib/wish-ticker.ts"), "@/lib/supabase/client": { createClient: () => ({}) }, "@/lib/http/public-api": {} });
   const formHtml = renderToStaticMarkup(React.createElement(WishesSection, { introduction: "<b>Xin xác nhận</b>" }));
   assert.ok(formHtml.includes("&lt;b&gt;Xin xác nhận&lt;/b&gt;"));
+});
+
+
+test("dress code resolves five slots and rejects invalid saved colors", () => {
+  const dress = load("lib/dress-code.ts");
+  assert.equal(dress.resolveDressCodeColors(undefined).length, 5);
+  assert.ok(dress.resolveDressCodeColors(undefined).every((color) => color === ""));
+  const resolved = dress.resolveDressCodeColors(["#123456", "red", "", "#ABCDEF", null, "#ffffff"]);
+  assert.equal(resolved.join(","), "#123456,,,#ABCDEF,");
+  const parse = (colors) => validation.parseContentInput({ sectionKey: "dress_code", content: { colors, dress_code_photo_media_id: "existing-image" }, isPublished: true });
+  assert.ok("value" in parse(["#eee5d5", "#cbb798", "#826653", "#642b36", "#9ca88c"]));
+  assert.ok("value" in parse(["", "", "", "", ""]));
+  for (const colors of [[], ["#ffffff"], ["red", "", "", "", ""], ["url(evil)", "", "", "", ""], "#ffffff"]) assert.ok("error" in parse(colors));
 });

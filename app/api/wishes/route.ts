@@ -39,5 +39,5 @@ export async function POST(request: NextRequest) {
     const limited = error.message.includes("rate limited");
     return NextResponse.json({ error: limited ? "Bạn đã gửi quá nhiều lời chúc. Vui lòng thử lại sau." : "Không thể gửi lời chúc lúc này." }, { status: limited ? 429 : 400, headers: { "Retry-After": limited ? "600" : "0", "Cache-Control": "no-store" } });
   }
-  return NextResponse.json({ message: "Lời chúc đã được gửi và đang chờ duyệt." }, { status: 202, headers: { "Cache-Control": "no-store" } });
+  return NextResponse.json({ message: "Lời chúc đã được gửi thành công. Cảm ơn bạn đã gửi lời chúc đến chúng mình!" }, { status: 202, headers: { "Cache-Control": "no-store" } });
 }

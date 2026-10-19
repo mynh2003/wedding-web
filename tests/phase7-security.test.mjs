@@ -13,6 +13,7 @@ test("production cache boundaries and security headers are explicit", () => {
   assert.match(config, /X-Content-Type-Options/);
   assert.match(config, /Content-Security-Policy/);
   assert.match(config, /\/api\/admin\/:path\*/);
+  assert.match(config, /source: "\/admin\/:path\*"[\s\S]*?key: "Referrer-Policy", value: "same-origin"/);
   assert.match(config, /private, no-store/);
 });
 

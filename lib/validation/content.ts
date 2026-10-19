@@ -1,3 +1,5 @@
+import { isDressCodeColor } from "@/lib/dress-code";
+
 export type ContentInput = { sectionKey: string; content: Record<string, unknown>; isPublished: boolean };
 
 const allowedKeys = new Set(["hero", "invitation", "families", "venue", "story", "timeline", "dress_code", "gifts", "copy"]);
@@ -16,6 +18,9 @@ export function parseContentInput(value: unknown): { value: ContentInput } | { e
     if (typeof raw === "string") { const text = safeText(raw, 2000); if (text === null) return { error: "Nội dung quá dài." }; content[key] = text; }
     else if (Array.isArray(raw) && raw.length <= 30 && raw.every((item) => typeof item === "string" && item.length <= 500)) content[key] = raw;
     else return { error: "Nội dung chỉ hỗ trợ text an toàn." };
+  }
+  if (sectionKey === "dress_code" && content.colors !== undefined) {
+    if (!Array.isArray(content.colors) || content.colors.length !== 5 || !content.colors.every((color) => color === "" || isDressCodeColor(color))) return { error: "Màu trang phục cần 5 ô, mỗi ô là mã HEX #RRGGBB hoặc để trống." };
   }
   if (sectionKey === "families") {
     const error = calendarRangeError(content.calendar_start_date, content.calendar_end_date);

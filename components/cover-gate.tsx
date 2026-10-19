@@ -79,6 +79,8 @@ export function CoverGate() {
 
   function openInvitation() {
     if (phase !== "idle") return;
+    // Start audio within the click gesture, before asynchronous reveal work.
+    window.dispatchEvent(new Event("wedding:open-requested"));
     setPhase("fading");
   }
 

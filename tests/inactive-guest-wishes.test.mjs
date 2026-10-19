@@ -57,6 +57,7 @@ test("inactive wishes are excluded from active moderation filters and cannot be 
     const { WishManager } = load("components/wish-manager.tsx", {
       react: { ...React, useEffect: () => {}, useState: (initial) => [Array.isArray(initial) ? rows : initial === "pending" ? filter : initial === true ? false : initial, () => {}] },
       "@/components/admin-shell": { AdminHeading: () => null, AdminIcon: () => null },
+      "@/components/wish-side-badge": load("components/wish-side-badge.tsx"),
     });
     return renderToStaticMarkup(React.createElement(WishManager));
   };

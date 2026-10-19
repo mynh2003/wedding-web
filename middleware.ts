@@ -15,7 +15,11 @@ export async function middleware(request: NextRequest) {
       return new NextResponse("Not found", { status: 404 });
     }
   }
-  const policy = corsPolicy(path, request.headers.get("origin"), deployment.frontendOrigin, deployment.backendOrigin);
+  const localCombined = deployment.role === "combined" && process.env.NODE_ENV !== "production";
+  const backendOrigin = localCombined
+    ? `${request.nextUrl.protocol}//${request.headers.get("host") ?? request.nextUrl.host}`
+    : deployment.backendOrigin;
+  const policy = corsPolicy(path, request.headers.get("origin"), deployment.frontendOrigin, backendOrigin);
   if (isBackendPath(path) && policy === "deny") return new NextResponse("Forbidden", { status: 403 });
   if (request.method === "OPTIONS" && path.startsWith("/api/")) {
     const method = request.headers.get("access-control-request-method") ?? "GET";

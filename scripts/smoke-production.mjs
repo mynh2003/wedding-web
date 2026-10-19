@@ -11,6 +11,13 @@ const home = await check("/");
 const health = await check("/api/health", {}, apiUrl);
 const healthBody = await health.json();
 if (healthBody.ok !== true) throw new Error("health endpoint is not healthy");
+const music = await check("/api/music", {}, apiUrl);
+const { track } = await music.json();
+if (!track?.title || !/^\/music\/[^/]+\.mp3$/i.test(track.src)) throw new Error("music API returned an invalid track");
+// Audio URLs are relative to the invitation origin, even with a separate API.
+const audio = await check(track.src, { headers: { Range: "bytes=0-1023" } });
+if (!audio.headers.get("content-type")?.startsWith("audio/")) throw new Error("music file is not served as audio");
+if (!(await audio.arrayBuffer()).byteLength) throw new Error("music file is empty");
 const unauthorized = await fetch(`${apiUrl}/api/admin/content`);
 if (unauthorized.status !== 401) throw new Error(`admin API returned ${unauthorized.status} without a session`);
 if (!home.headers.get("x-content-type-options")) throw new Error("security headers are missing");

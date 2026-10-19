@@ -10,8 +10,14 @@ const connectSources = ["'self'", deployment.backendOrigin, supabaseOrigin, real
 
 const nextConfig: NextConfig = {
   // Allow production verification without overwriting an active dev build.
-  distDir: process.env.NEXT_BUILD_DIR || ".next",
+  distDir: process.env.NEXT_BUILD_DIR || (process.env.NODE_ENV === "development" ? ".next-dev" : ".next"),
   reactStrictMode: true,
+  webpack(config, { dev }) {
+    // Avoid restoring damaged disk packs during local/LAN development.
+    // Keep production's build cache and optimizations unchanged.
+    if (dev) config.cache = { type: "memory" };
+    return config;
+  },
   images: {
     remotePatterns: supabaseStorageUrl ? [{
       protocol: supabaseStorageUrl.protocol === "http:" ? "http" : "https",
@@ -36,7 +42,12 @@ const nextConfig: NextConfig = {
       headers: [{ key: "Cache-Control", value: "public, max-age=31536000, immutable" }],
     }, {
       source: "/admin/:path*",
-      headers: [{ key: "Cache-Control", value: "private, no-store, max-age=0" }],
+      // Native form POSTs can get Origin: null under no-referrer.
+      // Preserve same-origin form identity without sending referrers off-site.
+      headers: [
+        { key: "Cache-Control", value: "private, no-store, max-age=0" },
+        { key: "Referrer-Policy", value: "same-origin" },
+      ],
     }, {
       source: "/api/admin/:path*",
       headers: [{ key: "Cache-Control", value: "private, no-store, max-age=0" }],

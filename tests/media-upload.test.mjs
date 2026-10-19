@@ -9,7 +9,7 @@ const require = createRequire(import.meta.url);
 function load(file, dependencies = {}) {
   const source = ts.transpileModule(fs.readFileSync(file, "utf8"), { compilerOptions: { module: ts.ModuleKind.CommonJS, target: ts.ScriptTarget.ES2020 } }).outputText;
   const exports = {};
-  vm.runInNewContext(source, { exports, File, Uint8Array, TextDecoder, console: { error() {} }, require: (name) => dependencies[name] ?? require(name) });
+  vm.runInNewContext(source, { exports, File, Uint8Array, TextDecoder, console: { error() {} }, require: (name) => dependencies[name] ?? (name === "@/lib/dress-code" ? load("lib/dress-code.ts") : require(name)) });
   return exports;
 }
 const validation = load("lib/validation/content.ts");

@@ -2,8 +2,17 @@ import "server-only";
 
 import { NextRequest } from "next/server";
 
+export function getAuthOrigin(request: NextRequest) {
+  if (process.env.NODE_ENV === "development" && (process.env.APP_ROLE === "combined" || (!process.env.APP_ROLE && (!process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_API_URL === process.env.NEXT_PUBLIC_SITE_URL)))) {
+    return new URL(`${request.nextUrl.protocol}//${request.headers.get("host") ?? request.nextUrl.host}`).origin;
+  }
+  return process.env.NEXT_PUBLIC_API_URL ?? process.env.NEXT_PUBLIC_SITE_URL ?? new URL(request.url).origin;
+}
+
 export function hasTrustedOrigin(request: NextRequest) {
-  const siteUrl = process.env.NEXT_PUBLIC_API_URL ?? process.env.NEXT_PUBLIC_SITE_URL;
+  const combinedDev = process.env.NODE_ENV === "development" && (process.env.APP_ROLE === "combined" || (!process.env.APP_ROLE && (!process.env.NEXT_PUBLIC_API_URL || process.env.NEXT_PUBLIC_API_URL === process.env.NEXT_PUBLIC_SITE_URL)));
+  if (!combinedDev && !process.env.NEXT_PUBLIC_API_URL && !process.env.NEXT_PUBLIC_SITE_URL) return false;
+  const siteUrl = getAuthOrigin(request);
   if (!siteUrl) return false;
   const isLoopback = (hostname: string) => hostname === "localhost" || hostname === "127.0.0.1";
   let trustedUrl: URL;

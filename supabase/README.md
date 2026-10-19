@@ -105,3 +105,10 @@ Token được mã hóa bằng AES-256-GCM, nonce ngẫu nhiên và gắn với 
 Link cũ chỉ có hash không thể tự chuyển thành link có thể khôi phục. Chúng vẫn hoạt động bình thường. Nếu còn giữ URL cũ trong tin nhắn, có thể tiếp tục dùng URL đó. Nếu đã mất, admin phải chủ động tạo lại một lần (link cũ bị thu hồi); từ đó link mới được lưu để mở lại. GET không tự tạo lại hay thu hồi link.
 
 Nút **Tạo lại link** thay token và thu hồi link cũ trong cùng transaction. Nếu lưu link mới thất bại, link cũ không bị thu hồi. Cần triển khai migration trước mã backend mới.
+
+## Dress code · 5 màu
+
+- Nâng cấp dữ liệu hiện có: chạy `migrations/202610190002_dress_code_colors.sql` trong Supabase SQL Editor sau các migration trước đó. Bổ sung bộ 5 màu khi chưa có trường colors, giữ màu tùy chỉnh và trạng thái xuất bản hiện có.
+- Khởi tạo hoặc đặt lại bộ 5 màu có sẵn cho một thiệp: chạy `init-dress-code.sql`, đổi slug nếu cần. Lệnh này ghi đè riêng bộ màu và xuất bản section dress_code, giữ ảnh và nội dung khác. Thiệp phải tồn tại trước khi chạy.
+- Bộ màu: kem #eee5d5, be #cbb798, nâu ấm #826653, đỏ rượu #642b36, xanh sage #9ca88c.
+- Dashboard → Content → Dress code: chọn hoặc xóa từng màu rồi bấm **Lưu & xuất bản màu trang phục**. Mảng `colors` gồm đúng 5 mã HEX hoặc chuỗi rỗng. Ô trống hoặc section chưa xuất bản dùng placeholder xám #d1d5db trên thiệp.

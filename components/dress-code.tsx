@@ -3,9 +3,10 @@
 import { useRef } from "react";
 import { motion, useReducedMotion, useScroll, useTransform } from "framer-motion";
 
-const colors = [["Kem", "#eee5d5"], ["Be", "#cbb798"], ["Nâu ấm", "#826653"], ["Đỏ rượu", "#642b36"]];
+import { DRESS_CODE_PLACEHOLDER, resolveDressCodeColors } from "@/lib/dress-code";
 
-export function DressCode({ imageUrl }: { imageUrl?: string }) {
+export function DressCode({ imageUrl, colors }: { imageUrl?: string; colors?: unknown }) {
+  const palette = resolveDressCodeColors(colors);
   const ref = useRef<HTMLDivElement>(null);
   const scrollContainer = useRef<HTMLElement>(null);
   const reduced = useReducedMotion();
@@ -42,7 +43,7 @@ export function DressCode({ imageUrl }: { imageUrl?: string }) {
         </motion.div>
         <motion.div className="dress-code-colors" style={{ y: reduced ? 0 : paletteY }}>
           <div className="dress-code-palette">
-            {colors.map(([name, color]) => <span key={name} className="dress-code-swatch" role="img" aria-label={`Màu ${name.toLowerCase()}`} style={{ backgroundColor: color }} />)}
+            {palette.map((color, index) => <span key={index} className="dress-code-swatch" role="img" aria-label={color ? `Màu trang phục ${index + 1}: ${color}` : `Màu trang phục ${index + 1}: chưa chọn`} style={{ backgroundColor: color || DRESS_CODE_PLACEHOLDER }} />)}
           </div>
         </motion.div>
       </div>

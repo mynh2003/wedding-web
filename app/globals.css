@@ -12,10 +12,15 @@
 html { scroll-behavior: smooth; }
 body { margin: 0; background: #fdfbf7; color: #2c2021; font-family: var(--font-body), Arial, sans-serif; font-synthesis: none; }
 button, input, textarea, select { font: inherit; }
+.wish-form :is(input, textarea, select) {
+  font-family: var(--font-playfair), Georgia, serif;
+  color: #722f37;
+}
 .gift-box-trigger { border: 0; padding: 0; background: transparent; cursor: pointer; -webkit-tap-highlight-color: transparent; }
-.wish-scroll-message { animation: wish-scroll-text 30s linear infinite; }
-@keyframes wish-scroll-text { from { transform: translateX(0); } to { transform: translateX(-50%); } }
-@media (prefers-reduced-motion: reduce) { .wish-scroll-message { animation-duration: 1ms; } }
+.wish-scroll-message { will-change: transform; }
+@media (prefers-reduced-motion: reduce) {
+  .wish-scroll-message { will-change: auto; }
+}
 .gift-box-image { animation: gift-box-breathe 3.6s ease-in-out infinite; transform-origin: center; }
 @keyframes gift-box-breathe { 0%, 100% { transform: scale(.96); } 50% { transform: scale(1.025); } }
 @media (prefers-reduced-motion: reduce) { .gift-box-image { animation: none; } }
@@ -125,6 +130,7 @@ body:has(.mobile-landing) { background: #fff; }
   width: 200px;
   height: 295px;
   transform: rotate(22deg);
+  opacity: .45;
 }
 .floral-paper--album { --section-flower: url("/assets/burgundy-watercolor-amaranth-cascade.webp"); }
 .floral-paper--album::before {
@@ -323,7 +329,7 @@ body:has(.mobile-landing) { background: #fff; }
 .thank-you-forest::after {
   position: absolute;
   inset: 0;
-  background-image: radial-gradient(ellipse at 50% 50%, transparent 26%, rgba(0, 0, 0, .22) 100%), repeating-linear-gradient(112deg, transparent 0 17px, rgba(5, 21, 12, .13) 18px 21px);
+  background-image: radial-gradient(ellipse at 50% 50%, transparent 26%, rgba(0, 0, 0, .22) 100%);
   content: "";
 }
 
@@ -340,7 +346,8 @@ body:has(.mobile-landing) { background: #fff; }
 .love-story { position: relative; isolation: isolate; display: grid; padding-block: 48px; background: #fdfbf7; color: #722f37; }
 /* Starts in normal flow, pins at viewport center, then stops at the section bottom. */
 .love-story-heading { grid-area: 1 / 1; align-self: start; position: sticky; top: max(0px, calc(50svh - 120px)); display: flex; height: 240px; flex-direction: column; justify-content: center; align-items: center; padding: 20px 12px; text-align: center; }
-.love-story-heading h2 { margin: 0; font-family: var(--font-flavinda), var(--font-great-vibes), cursive; font-size: clamp(36px, 10.5vw, 46px); font-weight: 400; line-height: 1.25; letter-spacing: normal; }
+.love-story-heading h2 { margin: 0; font-family: var(--font-flavinda), var(--font-great-vibes), cursive; font-size: clamp(44px, 13vw, 56px); font-weight: 400; line-height: 1.25; letter-spacing: normal; }
+.love-story-lowercase-t { font-size: .75em; }
 .love-story-description-window { height: 7rem; width: calc(100% - 104px); margin-top: 22px; overflow: hidden; }
 .love-story-description-page { min-height: 7rem; margin: 0; color: #722f37; white-space: pre-line; overflow-wrap: anywhere; }
 
@@ -351,6 +358,8 @@ body:has(.mobile-landing) { background: #fff; }
 .love-story-review--right, .love-story-review--lower-right { justify-self: end; margin-right: 3%; }
 .love-story-review--center { justify-self: center; }
 .love-story-review-image { position: relative; width: 100%; aspect-ratio: 3 / 4; background: #777; overflow: hidden; border-radius: 0; }
+.love-story-review { pointer-events: auto; cursor: zoom-in; }
+.love-story-review:focus-visible { outline: 2px solid #722f37; outline-offset: 4px; }
 @media (prefers-reduced-motion: reduce) {
   .love-story { display: block; padding: 48px 16px; }
   .love-story-heading { position: static; height: auto; padding: 0 0 32px; }
@@ -612,7 +621,7 @@ body:has(.mobile-landing) { background: #fff; }
   height: 235px;
   background: url("/assets/burgundy-watercolor-orchid-palm.webp") center / contain no-repeat;
   transform: scaleX(-1) rotate(18deg);
-  opacity: .78;
+  opacity: .45;
   pointer-events: none;
   content: "";
 }

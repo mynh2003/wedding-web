@@ -85,6 +85,9 @@
 .admin-recent p { font-size: 12px; color: #727780; margin: 5px 0; overflow: hidden; display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow-wrap: anywhere; }
 .admin-recent small { font-size: 10px; color: #93969e; }
 .admin-badge { display: inline-flex; align-items: center; padding: 5px 9px; border-radius: 6px; font-size: 10px; font-weight: 500; white-space: nowrap; }
+.admin-wish-side { display: inline-flex; align-items: center; margin-left: 8px; padding: 3px 8px; border-radius: 6px; font-size: 11px; font-weight: 600; line-height: 1.5; white-space: nowrap; vertical-align: middle; }
+.admin-wish-side.groom { background: #e0efff; color: #245b94; }
+.admin-wish-side.bride { background: #fce4ef; color: #a33768; }
 .admin-footer { display: flex; justify-content: space-between; gap: 16px; margin: 0 40px; padding: 22px 0; border-top: 1px solid var(--admin-line); color: #8b8d96; font-size: 10px; }
 .admin-footer span { color: #a2a4ac; }
 .admin-notice { margin: 16px 0; padding: 14px 18px; border: 1px solid #e9d9bb; border-radius: 8px; background: #fff9ec; color: #785f2a; font-size: 12px; overflow-wrap: anywhere; }
@@ -161,3 +164,88 @@
 .admin-confirm-checkbox input { flex: 0 0 18px; width: 18px; height: 18px; min-height: 18px; margin-top: 2px; }
 .admin-confirm-actions { display: flex; flex-wrap: wrap; justify-content: flex-end; gap: 12px; margin-top: 24px; }
 .admin-confirm-dialog .admin-section-heading p { font-weight: 600; color: var(--admin-ink); }
+
+/* Palette editing: an immediate preview, clear slots and optional starting points. */
+.admin-palette-editor { display: grid; gap: 22px; }
+.admin-palette-preview { padding: 24px; border: 1px solid #eadde0; border-radius: 16px; background: #fcf8f8; }
+.admin-palette-eyebrow { color: #926571; font-size: 10px; font-weight: 600; letter-spacing: 1.5px; }
+.admin-palette-preview h3 { margin-top: 6px; font-size: 18px; font-weight: 600; letter-spacing: -.3px; }
+.admin-palette-preview p, .admin-palette-suggestions > p { margin-top: 6px; font-size: 13px; color: var(--admin-muted); line-height: 1.7; }
+.admin-palette-strip { display: flex; height: 72px; margin: 20px 0 12px; overflow: hidden; border: 1px solid #292d3210; border-radius: 12px; }
+.admin-palette-strip > span { flex: 1; min-width: 0; }
+.admin-palette-count { font-size: 11px; color: #84767b; }
+.admin-color-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 12px; }
+.admin-color-card { display: flex; flex-direction: column; align-items: center; gap: 12px; min-width: 0; padding: 16px 10px 6px; border: 1px solid var(--admin-line); border-radius: 12px; background: #fff; }
+.admin-color-picker { position: relative; display: grid; place-items: center; width: 58px; height: 58px; flex-shrink: 0; overflow: hidden; border: 1px solid #292d321a; border-radius: 50%; cursor: pointer; }
+.admin-color-picker:focus-within { outline: 3px solid #ad6979; outline-offset: 3px; }
+.admin-color-picker input[type="color"] { position: absolute; inset: 0; width: 100%; height: 100%; min-height: 0; opacity: 0; cursor: pointer; }
+.admin-color-picker > span { display: grid; place-items: center; width: 24px; height: 24px; border-radius: 50%; background: #ffffffdf; color: #4a3e42; font-size: 18px; pointer-events: none; }
+.admin-color-description { min-width: 0; text-align: center; }
+.admin-color-description strong { display: block; font-size: 13px; font-weight: 600; }
+.admin-color-description > span { display: block; margin-top: 3px; color: var(--admin-muted); font-size: 11px; }
+.admin-color-clear { min-height: 44px; padding: 8px 12px; color: #926571; font-size: 12px; border-radius: 8px; }
+.admin-color-clear:hover:not(:disabled) { background: #fcf0f3; }
+.admin-palette-suggestions h3 { font-size: 14px; font-weight: 600; }
+.admin-palette-presets { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; margin-top: 14px; }
+.admin-palette-presets > button { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; padding: 14px; border: 1px solid var(--admin-line); border-radius: 12px; text-align: left; font-size: 12px; background: #fff; transition: border-color .15s, background .15s; }
+.admin-palette-presets > button:hover { border-color: #bf929d; background: #fcf8f9; }
+.admin-palette-presets > button > span:last-child { margin-left: auto; color: #926571; }
+.admin-preset-colors { display: flex; flex-basis: 100%; height: 30px; overflow: hidden; border-radius: 6px; border: 1px solid #292d3210; }
+.admin-preset-colors > span { flex: 1; }
+
+@media (max-width: 760px) {
+  .admin-ui { font-size: 14px; }
+  .admin-sidebar { position: relative; padding: 16px; }
+  .admin-brand { padding: 0; max-width: calc(100% - 100px); }
+  .admin-brand small { font-size: 8px; letter-spacing: .8px; }
+  .admin-sidebar nav { position: fixed; inset: auto 0 0; z-index: 50; margin: 0; gap: 4px; padding: 8px 10px calc(8px + env(safe-area-inset-bottom)); border-top: 1px solid #e9e9ed; background: #fffffffa; box-shadow: 0 -6px 24px #292d3208; backdrop-filter: blur(12px); }
+  .admin-sidebar nav .admin-nav-link { min-height: 56px; padding: 8px 2px; font-size: 11px; line-height: 1.3; }
+  .admin-sidebar nav .admin-nav-link svg { width: 21px; height: 21px; }
+  .admin-sidebar-bottom { top: 14px; right: 16px; }
+  .admin-sidebar-bottom .admin-nav-link { min-height: 44px; font-size: 12px; }
+  .admin-workspace { padding-bottom: calc(88px + env(safe-area-inset-bottom)); }
+  .admin-topbar { height: 56px; padding-inline: 16px; background: #f7f8fa; }
+  .admin-breadcrumb { min-width: 0; gap: 8px; font-size: 12px; }
+  .admin-breadcrumb strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+  .admin-account > span:last-child { display: none; }
+  .admin-account .admin-avatar { width: 30px; height: 30px; }
+  .admin-content { padding: 20px 16px 24px; }
+  .admin-content main, .admin-content fieldset, .admin-card { min-width: 0; }
+  .admin-heading { gap: 14px; margin-bottom: 20px; }
+  .admin-heading p { font-size: 13px; line-height: 1.7; }
+  .admin-heading h1 { font-size: 26px; line-height: 1.3; letter-spacing: -.6px; }
+  .admin-heading > .admin-button { width: 100%; }
+  .admin-button { min-height: 44px; font-size: 13px; }
+  .admin-ui :is(.admin-input, textarea, select), .admin-login input { min-width: 0; max-width: 100%; font-size: 16px; }
+  .admin-field { font-size: 13px; gap: 8px; }
+  .admin-section-heading { flex-wrap: wrap; gap: 12px; }
+  .admin-section-heading p { font-size: 13px; line-height: 1.7; }
+  .admin-row-name { min-width: 0; overflow-wrap: anywhere; }
+  .admin-toolbar { gap: 12px; }
+  .admin-search { width: 100%; }
+  .admin-tabs { flex-wrap: nowrap; max-width: 100%; overflow-x: auto; padding-bottom: 4px; }
+  .admin-tabs button { flex: 0 0 auto; white-space: nowrap; font-size: 13px; }
+  .admin-recent { display: grid; grid-template-columns: 36px minmax(0, 1fr); }
+  .admin-recent > .admin-badge { grid-column: 2; justify-self: start; margin-left: 0; }
+  .admin-recent strong, .admin-recent p { font-size: 13px; }
+  .admin-pagination { align-items: stretch; gap: 12px; }
+  .admin-pagination > span, .admin-pagination > div { width: 100%; }
+  .admin-pagination > div > button { flex: 1; }
+  .admin-link-dialog { padding: 20px; max-height: calc(100dvh - 32px); }
+  .admin-confirm-actions > button { flex: 1; }
+  .admin-login main { padding: 24px 16px; }
+  .admin-login form { padding: 28px 22px; border-radius: 20px; }
+  .admin-login input, .admin-login button { min-height: 48px; }
+  .admin-color-grid { grid-template-columns: 1fr; gap: 10px; }
+  .admin-color-card { flex-direction: row; padding: 12px; gap: 14px; }
+  .admin-color-picker { width: 48px; height: 48px; }
+  .admin-color-description { flex: 1; text-align: left; }
+  .admin-color-description > span { font-size: 12px; }
+  .admin-color-clear { padding-inline: 14px; }
+  .admin-palette-preview { padding: 20px; }
+  .admin-palette-preview h3 { font-size: 17px; }
+  .admin-palette-strip { height: 60px; }
+  .admin-palette-presets { grid-template-columns: 1fr; }
+  .admin-palette-presets > button { display: grid; grid-template-columns: 84px minmax(0, 1fr) auto; padding: 12px; }
+  .admin-preset-colors { height: 36px; }
+}

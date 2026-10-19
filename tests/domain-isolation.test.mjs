@@ -108,6 +108,29 @@ test("split local development still isolates admin by port", () => {
   assert.equal(hasTrustedOrigin(new NextRequest("http://localhost:3001/auth/login")), true);
 });
 
+test("combined development supports localhost and LAN admin without crossing origins", async () => {
+  const localEnv = { NODE_ENV: "development", NEXT_PUBLIC_SITE_URL: "http://192.168.1.103:3000", NEXT_PUBLIC_API_URL: "http://192.168.1.103:3000" };
+  const origin = load("lib/auth/origin.ts", localEnv, { "server-only": {} });
+  const { POST } = load("app/auth/login/route.ts", localEnv, {
+    "@/lib/auth/origin": origin,
+    "@/lib/supabase/server": { createClient: () => { throw new Error("Empty credentials must not reach Supabase"); } },
+  });
+  const localMiddleware = load("middleware.ts", localEnv, {
+    "@/lib/deployment": policy,
+    "@/lib/supabase/proxy": { updateSession: async () => NextResponse.next() },
+  }).middleware;
+  for (const host of ["localhost:3000", "127.0.0.1:3000", "192.168.1.103:3000"]) {
+    const request = new NextRequest("http://0.0.0.0:3000/auth/login", {
+      method: "POST", headers: { host, origin: `http://${host}`, "content-type": "application/x-www-form-urlencoded" }, body: "email=&password=",
+    });
+    assert.equal(origin.hasTrustedOrigin(request), true);
+    assert.equal((await localMiddleware(request)).status, 200);
+    assert.equal((await POST(request)).headers.get("location"), `http://${host}/admin/login?error=invalid`);
+    assert.equal(origin.hasTrustedOrigin(new NextRequest(`http://${host}/auth/login`, { headers: { host, origin: "http://evil.example" } })), false);
+    assert.equal((await localMiddleware(new NextRequest(`http://${host}/admin/login`, { headers: { host } }))).status, 200);
+  }
+});
+
 test("login redirects stay on the configured HTTPS backend behind a proxy", async () => {
   const origin = load("lib/auth/origin.ts", env, { "server-only": {} });
   const { POST } = load("app/auth/login/route.ts", env, {
@@ -119,4 +142,23 @@ test("login redirects stay on the configured HTTPS backend behind a proxy", asyn
   }));
   assert.equal(response.status, 303);
   assert.equal(response.headers.get("location"), `${env.NEXT_PUBLIC_API_URL}/admin/login?error=invalid`);
+});
+
+test("successful LAN admin login returns to the LAN dashboard", async () => {
+  const localEnv = { NODE_ENV: "development", NEXT_PUBLIC_SITE_URL: "http://localhost:3000" };
+  const origin = load("lib/auth/origin.ts", localEnv, { "server-only": {} });
+  const query = { select() { return this; }, eq() { return this; }, async maybeSingle() { return { data: { user_id: "admin" } }; } };
+  const { POST } = load("app/auth/login/route.ts", localEnv, {
+    "@/lib/auth/origin": origin,
+    "@/lib/supabase/server": { createClient: async () => ({
+      auth: { signInWithPassword: async () => ({ error: null }), getUser: async () => ({ data: { user: { id: "admin", email_confirmed_at: "2026-10-19" } } }) },
+      from: () => query,
+    }) },
+  });
+  const response = await POST(new NextRequest("http://0.0.0.0:3000/auth/login", {
+    method: "POST", headers: { host: "192.168.1.100:3000", origin: "http://192.168.1.100:3000", "content-type": "application/x-www-form-urlencoded" },
+    body: "email=test%40example.com&password=test-only",
+  }));
+  assert.equal(response.status, 303);
+  assert.equal(response.headers.get("location"), "http://192.168.1.100:3000/admin");
 });
