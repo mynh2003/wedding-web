@@ -1,0 +1,34 @@
+import type { Config } from "tailwindcss";
+
+const config: Config = {
+  content: ["./app/**/*.{js,ts,jsx,tsx,mdx}", "./components/**/*.{js,ts,jsx,tsx,mdx}"],
+  theme: {
+    extend: {
+      colors: {
+        wine: "#722F37",
+        cream: "#FDFCFB",
+        gold: "#D4AF37",
+        ink: "#2C2021",
+      },
+      fontFamily: {
+        script: ["var(--font-great-vibes)", "cursive"],
+        accent: ["var(--font-great-vibes)", "cursive"],
+        flavinda: ["var(--font-flavinda)", "var(--font-great-vibes)", "cursive"],
+        body: ["var(--font-montserrat)", "Arial", "sans-serif"],
+        vietnam: ["var(--font-vietnam)", "Arial", "sans-serif"],
+        display: ["var(--font-playfair)", "Georgia", "serif"],
+        serif: ["var(--font-playfair)", "Georgia", "serif"],
+        sans: ["var(--font-montserrat)", "Arial", "sans-serif"],
+      },
+      boxShadow: {
+        soft: "0 24px 80px rgba(72, 31, 35, 0.12)",
+      },
+      backgroundImage: {
+        "paper-grain": "radial-gradient(rgba(114,47,55,.07) .7px, transparent .7px)",
+      },
+    },
+  },
+  plugins: [],
+};
+
+export default config;

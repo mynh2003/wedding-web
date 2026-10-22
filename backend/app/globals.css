@@ -1,0 +1,10 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@font-face { font-family: "Be Vietnam Pro"; src: url("/font/browser/bevietnampro-regular.3975ab951be9.woff2") format("woff2"); font-weight: 400; font-style: normal; font-display: swap; }
+@font-face { font-family: "Be Vietnam Pro"; src: url("/font/browser/bevietnampro-medium.5f01fdb3cbd3.woff2") format("woff2"); font-weight: 500; font-style: normal; font-display: swap; }
+@font-face { font-family: "Be Vietnam Pro"; src: url("/font/browser/bevietnampro-semibold.218044c17058.woff2") format("woff2"); font-weight: 600; font-style: normal; font-display: swap; }
+@font-face { font-family: "Be Vietnam Pro"; src: url("/font/browser/bevietnampro-bold.3bb06e5a6b78.woff2") format("woff2"); font-weight: 700; font-style: normal; font-display: swap; }
+:root { --font-vietnam: "Be Vietnam Pro", Arial, sans-serif; }
+body { margin: 0; background: #f7f8fa; }

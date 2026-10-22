@@ -1,0 +1,78 @@
+{
+  "assets": [
+    {
+      "source": "/assets/burgundy-watercolor-amaranth-cascade.webp",
+      "target": "/assets/burgundy-watercolor-amaranth-cascade.optimized.webp",
+      "before": 156860,
+      "after": 156178
+    },
+    {
+      "source": "/assets/countdown-watercolor-anthurium-left-v7.webp",
+      "target": "/assets/countdown-watercolor-anthurium-left-v7.optimized.webp",
+      "before": 351258,
+      "after": 332784
+    },
+    {
+      "source": "/assets/Heart.png",
+      "target": "/assets/Heart.optimized.webp",
+      "before": 83959,
+      "after": 39010
+    },
+    {
+      "source": "/assets/invitation-watercolor-bottom-left-v11.webp",
+      "target": "/assets/invitation-watercolor-bottom-left-v11.optimized.webp",
+      "before": 160128,
+      "after": 152922
+    },
+    {
+      "source": "/assets/invitation-watercolor-top-right-v11.webp",
+      "target": "/assets/invitation-watercolor-top-right-v11.optimized.webp",
+      "before": 184556,
+      "after": 177342
+    },
+    {
+      "source": "/assets/love-mask.png",
+      "target": "/assets/love-mask.optimized.webp",
+      "before": 35282,
+      "after": 9906
+    },
+    {
+      "source": "/assets/monogram-mh-bride.png",
+      "target": "/assets/monogram-mh-bride.optimized.webp",
+      "before": 12158,
+      "after": 5710
+    },
+    {
+      "source": "/assets/monogram-mh-groom.png",
+      "target": "/assets/monogram-mh-groom.optimized.webp",
+      "before": 12028,
+      "after": 5710
+    },
+    {
+      "source": "/assets/monogram-mh-preview.png",
+      "target": "/assets/monogram-mh-preview.optimized.webp",
+      "before": 16462,
+      "after": 6072
+    },
+    {
+      "source": "/assets/wedding-gift-mh-v2.png",
+      "target": "/assets/wedding-gift-mh-v2.optimized.webp",
+      "before": 1401330,
+      "after": 133168
+    },
+    {
+      "source": "/envelope-burgundy-weave.webp",
+      "target": "/envelope-burgundy-weave.optimized.webp",
+      "before": 381186,
+      "after": 274410
+    },
+    {
+      "source": "/wax-seal-monogram-mh-384.webp",
+      "target": "/wax-seal-monogram-mh-384.optimized.webp",
+      "before": 177984,
+      "after": 177556
+    }
+  ],
+  "originalBytes": 2973191,
+  "optimizedBytes": 1470768
+}

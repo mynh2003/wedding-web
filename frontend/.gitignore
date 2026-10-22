@@ -1,0 +1,14 @@
+node_modules/
+.next/
+.next-dev/
+**/.next*/
+.next-performance/
+.next-verify/
+*.tsbuildinfo
+out/
+.env*
+!.env.example
+*.log
+.DS_Store
+
+.vercel/
